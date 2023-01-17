@@ -1,0 +1,10 @@
+[package]
+name = "parside"
+version = "0.1.1"
+edition = "2021"
+description = "Parser for Composable Event Streaming Representation (CESR)"
+license = "Apache-2.0"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
