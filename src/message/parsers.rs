@@ -1,6 +1,6 @@
 use crate::error::{ParsideError, ParsideResult};
 use crate::message::cold_code::ColdCodes;
-use crate::utils;
+use crate::{nomify, utils};
 use cesride::{Counter, Matter};
 use nom::multi::count;
 

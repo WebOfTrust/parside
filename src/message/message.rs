@@ -1,8 +1,8 @@
 use serde::de::DeserializeOwned;
 
 use crate::error::{ParsideError, ParsideResult};
+use crate::message::CesrGroup;
 use crate::message::custom_payload::CustomPayload;
-use crate::message::groups::CesrGroup;
 use crate::message::cold_code::ColdCodes;
 
 #[derive(Debug)]
@@ -14,7 +14,7 @@ pub enum Message {
 impl Message {
     pub fn from_stream_bytes(bytes: &[u8]) -> ParsideResult<(&[u8], Message)> {
         if bytes.is_empty() {
-            return Err(ParsideError::EmptyBytesStream);
+            return Err(ParsideError::Empty);
         }
 
         let cold_code = ColdCodes::try_from(bytes[0])?;

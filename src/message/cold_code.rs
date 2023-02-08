@@ -30,7 +30,7 @@ impl TryFrom<u8> for ColdCodes {
     fn try_from(byte: u8) -> ParsideResult<Self> {
         let tritet = byte >> 5;
         FromPrimitive::from_u8(tritet).ok_or_else(|| {
-            ParsideError::PayloadDeserializeError(
+            ParsideError::StreamDeserializationError(
                 "Unable to parse Message cold start code".to_string(),
             )
         })

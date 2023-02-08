@@ -6,11 +6,11 @@ pub enum ParsideError {
     #[error("Payload deserialize error: {0}")]
     PayloadDeserializeError(String),
 
-    #[error("Nom error")]
-    StreamDeserializationError(nom::error::ErrorKind),
+    #[error("Unable to deserialize stream: {0}")]
+    StreamDeserializationError(String),
 
     #[error("Empty bytes stream passed for parsing")]
-    EmptyBytesStream,
+    Empty,
 
     #[error("Requested variant does not exists")]
     NotExist,
@@ -24,7 +24,7 @@ pub enum ParsideError {
 
 impl<E> From<nom::Err<E>> for ParsideError {
     fn from(_: nom::Err<E>) -> ParsideError {
-        ParsideError::StreamDeserializationError(ErrorKind::IsNot)
+        ParsideError::StreamDeserializationError(ErrorKind::IsNot.description().to_string())
     }
 }
 
