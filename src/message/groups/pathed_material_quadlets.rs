@@ -11,6 +11,10 @@ pub struct PathedMaterialQuadlets {
 impl PathedMaterialQuadlets {
     pub const CODE: Codex = Codex::PathedMaterialQuadlets;
 
+    pub fn new(value: Vec<Matter>) -> Self {
+        Self { value }
+    }
+
     pub(crate) fn from_stream_bytes<'a>(
         _bytes: &'a [u8],
         _counter: &Counter,

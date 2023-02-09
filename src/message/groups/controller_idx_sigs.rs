@@ -13,6 +13,22 @@ pub struct ControllerIdxSigs {
 impl ControllerIdxSigs {
     pub const CODE: Codex = Codex::ControllerIdxSigs;
 
+    pub fn new(value: Vec<Matter>) -> Self {
+        Self { value }
+    }
+
+    pub fn to_string(&self) -> ParsideResult<String> {
+        let mut string = Counter::new(Self::CODE.code(), self.value.len() as u32).qb64()?;
+        for matter in self.value.iter() {
+            string.push_str(&matter.qb64()?);
+        }
+        Ok(string)
+    }
+
+    pub fn to_bytes(&self) -> ParsideResult<Vec<u8>> {
+        self.to_string().map(|str| str.as_bytes().to_vec())
+    }
+
     pub(crate) fn from_stream_bytes<'a>(
         bytes: &'a [u8],
         counter: &Counter,

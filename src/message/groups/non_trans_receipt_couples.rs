@@ -14,6 +14,10 @@ pub struct NonTransReceiptCouples {
 impl NonTransReceiptCouples {
     pub const CODE: Codex = Codex::NonTransReceiptCouples;
 
+    pub fn new(value: Vec<NonTransReceiptCouple>) -> Self {
+        Self { value }
+    }
+
     pub(crate) fn from_stream_bytes<'a>(
         bytes: &'a [u8],
         counter: &Counter,
@@ -38,6 +42,12 @@ impl NonTransReceiptCouples {
 pub struct NonTransReceiptCouple {
     pub verfer: Matter,
     pub cigar: Matter,
+}
+
+impl NonTransReceiptCouple {
+    pub fn new(verfer: Matter, cigar: Matter) -> Self {
+        Self { verfer, cigar }
+    }
 }
 
 #[cfg(test)]

@@ -13,6 +13,10 @@ pub struct WitnessIdxSigs {
 impl WitnessIdxSigs {
     pub const CODE: Codex = Codex::WitnessIdxSigs;
 
+    pub fn new(value: Vec<Matter>) -> Self {
+        Self { value }
+    }
+
     pub(crate) fn from_stream_bytes<'a>(
         bytes: &'a [u8],
         counter: &Counter,

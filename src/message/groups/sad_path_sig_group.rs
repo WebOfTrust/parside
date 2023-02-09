@@ -11,6 +11,10 @@ pub struct SadPathSigGroup {
 impl SadPathSigGroup {
     pub const CODE: Codex = Codex::SadPathSigGroup;
 
+    pub fn new(value: Vec<Matter>) -> Self {
+        Self { value }
+    }
+
     pub(crate) fn from_stream_bytes<'a>(
         _bytes: &'a [u8],
         _counter: &Counter,

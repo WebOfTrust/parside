@@ -8,11 +8,15 @@ use nom::sequence::tuple;
 
 #[derive(Debug, Clone, Default)]
 pub struct TransReceiptQuadruples {
-    pub value: Vec<NonTransReceiptCouple>,
+    pub value: Vec<TransReceiptQuadruple>,
 }
 
 impl TransReceiptQuadruples {
     pub const CODE: Codex = Codex::TransReceiptQuadruples;
+
+    pub fn new(value: Vec<TransReceiptQuadruple>) -> Self {
+        Self { value }
+    }
 
     pub(crate) fn from_stream_bytes<'a>(
         bytes: &'a [u8],
@@ -30,7 +34,7 @@ impl TransReceiptQuadruples {
         )(bytes)?;
         let body = body
             .into_iter()
-            .map(|(prefixer, seqner, saider, siger)| NonTransReceiptCouple {
+            .map(|(prefixer, seqner, saider, siger)| TransReceiptQuadruple {
                 prefixer,
                 seqner,
                 saider,
@@ -43,9 +47,15 @@ impl TransReceiptQuadruples {
 }
 
 #[derive(Debug, Clone, Default)]
-pub struct NonTransReceiptCouple {
+pub struct TransReceiptQuadruple {
     pub prefixer: Matter,
     pub seqner: Matter,
     pub saider: Matter,
     pub siger: Matter,
+}
+
+impl TransReceiptQuadruple {
+    pub fn new(prefixer: Matter, seqner: Matter, saider: Matter, siger: Matter) -> Self {
+        Self { prefixer, seqner, saider, siger }
+    }
 }

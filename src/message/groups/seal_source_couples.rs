@@ -14,6 +14,10 @@ pub struct SealSourceCouples {
 impl SealSourceCouples {
     pub const CODE: Codex = Codex::SealSourceCouples;
 
+    pub fn new(value: Vec<SealSourceCouple>) -> Self {
+        Self { value }
+    }
+
     pub(crate) fn from_stream_bytes<'a>(
         bytes: &'a [u8],
         counter: &Counter,
@@ -39,4 +43,10 @@ impl SealSourceCouples {
 pub struct SealSourceCouple {
     pub seqner: Matter,
     pub saider: Matter,
+}
+
+impl SealSourceCouple {
+    pub fn new(seqner: Matter, saider: Matter) -> Self {
+        Self { seqner, saider }
+    }
 }

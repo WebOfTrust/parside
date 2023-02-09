@@ -14,6 +14,10 @@ pub struct FirstSeenReplayCouples {
 impl FirstSeenReplayCouples {
     pub const CODE: Codex = Codex::FirstSeenReplayCouples;
 
+    pub fn new(value: Vec<FirstSeenReplayCouple>) -> Self {
+        Self { value }
+    }
+
     pub(crate) fn from_stream_bytes<'a>(
         bytes: &'a [u8],
         counter: &Counter,
@@ -39,4 +43,10 @@ impl FirstSeenReplayCouples {
 pub struct FirstSeenReplayCouple {
     pub firner: Matter,
     pub dater: Matter,
+}
+
+impl FirstSeenReplayCouple {
+    pub fn new(firner: Matter, dater: Matter) -> Self {
+        Self { firner, dater }
+    }
 }

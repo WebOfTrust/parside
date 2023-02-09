@@ -14,6 +14,10 @@ pub struct TransLastIdxSigGroups {
 impl TransLastIdxSigGroups {
     pub const CODE: Codex = Codex::TransLastIdxSigGroups;
 
+    pub fn new(value: Vec<TransLastIdxSigGroup>) -> Self {
+        Self { value }
+    }
+
     pub(crate) fn from_stream_bytes<'a>(
         bytes: &'a [u8],
         counter: &Counter,
@@ -40,6 +44,12 @@ impl TransLastIdxSigGroups {
 pub struct TransLastIdxSigGroup {
     pub prefixer: Matter,
     pub isigers: Vec<Matter>,
+}
+
+impl TransLastIdxSigGroup {
+    pub fn new(prefixer: Matter, isigers: Vec<Matter>) -> Self {
+        Self { prefixer, isigers }
+    }
 }
 
 #[cfg(test)]

@@ -53,6 +53,7 @@ impl Parsers {
         Ok((rest, counter))
     }
 
+    #[allow(unused)]
     pub(crate) fn indexer_parser<'a>(
         cold_code: &ColdCodes,
     ) -> ParsideResult<fn(&'a [u8]) -> nom::IResult<&'a [u8], Matter>> {
