@@ -1,7 +1,7 @@
 use crate::error::{ParsideError, ParsideResult};
 use crate::message::cold_code::ColdCodes;
 use crate::{nomify, utils};
-use cesride::{Counter, Matter};
+use cesride::{Counter, Matter, Diger, Verfer};
 use nom::multi::count;
 
 pub struct Parsers {}
@@ -25,6 +25,51 @@ impl Parsers {
 
     fn matter_from_qb2(bytes: &[u8]) -> ParsideResult<(&[u8], Matter)> {
         let matter = Matter::new_with_qb2(bytes)?;
+        let size = matter.full_size()? as usize;
+        Ok((&bytes[size..], matter))
+    }
+
+    #[allow(unused)]
+    pub(crate) fn diger_parser<'a>(
+        cold_code: &ColdCodes,
+    ) -> ParsideResult<fn(&'a [u8]) -> nom::IResult<&'a [u8], Matter>> {
+        match cold_code {
+            ColdCodes::CtB64 | ColdCodes::OpB64 => Ok(nomify!(Self::diger_from_qb64b)),
+            ColdCodes::CtOpB2 => Ok(nomify!(Self::diger_from_qb2)),
+            _ => Err(ParsideError::Unexpected("Unexpected cold code".to_string())),
+        }
+    }
+
+    fn diger_from_qb64b(bytes: &[u8]) -> ParsideResult<(&[u8], Matter)> {
+        let matter = <Matter as Diger>::new_with_qb64b(bytes)?;
+        let size = matter.full_size()? as usize;
+        Ok((&bytes[size..], matter))
+    }
+
+    fn diger_from_qb2(bytes: &[u8]) -> ParsideResult<(&[u8], Matter)> {
+        let matter = <Matter as Diger>::new_with_qb2(bytes)?;
+        let size = matter.full_size()? as usize;
+        Ok((&bytes[size..], matter))
+    }
+
+    pub(crate) fn verfer_parser<'a>(
+        cold_code: &ColdCodes,
+    ) -> ParsideResult<fn(&'a [u8]) -> nom::IResult<&'a [u8], Matter>> {
+        match cold_code {
+            ColdCodes::CtB64 | ColdCodes::OpB64 => Ok(nomify!(Self::verfer_from_qb64b)),
+            ColdCodes::CtOpB2 => Ok(nomify!(Self::verfer_from_qb2)),
+            _ => Err(ParsideError::Unexpected("Unexpected cold code".to_string())),
+        }
+    }
+
+    fn verfer_from_qb64b(bytes: &[u8]) -> ParsideResult<(&[u8], Matter)> {
+        let matter = <Matter as Verfer>::new_with_qb64b(bytes)?;
+        let size = matter.full_size()? as usize;
+        Ok((&bytes[size..], matter))
+    }
+
+    fn verfer_from_qb2(bytes: &[u8]) -> ParsideResult<(&[u8], Matter)> {
+        let matter = <Matter as Verfer>::new_with_qb2(bytes)?;
         let size = matter.full_size()? as usize;
         Ok((&bytes[size..], matter))
     }

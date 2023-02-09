@@ -25,7 +25,7 @@ impl NonTransReceiptCouples {
     ) -> ParsideResult<(&'a [u8], NonTransReceiptCouples)> {
         let (rest, body) = count(
             tuple((
-                Parsers::matter_parser(cold_code)?,
+                Parsers::verfer_parser(cold_code)?,
                 Parsers::matter_parser(cold_code)?,
             )),
             counter.count() as usize,
