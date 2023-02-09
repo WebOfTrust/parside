@@ -1,8 +1,24 @@
 use crate::error::{ParsideError, ParsideResult};
 use crate::message::cold_code::ColdCodes;
-use crate::{nomify, utils};
+use crate::nomify;
 use cesride::{Counter, Matter, Diger, Verfer};
 use nom::multi::count;
+
+macro_rules! matter_wrapper {
+    ($func:expr, $bytes:ident) => ({
+        let matter = $func($bytes)?;
+        let size = matter.full_size()? as usize;
+        Ok((&$bytes[size..], matter))
+    })
+}
+
+macro_rules! counter_wrapper {
+    ($func:expr, $bytes:ident) => ({
+        let counter = $func($bytes)?;
+        let size = counter.sizage()?.fs as usize;
+        Ok((&$bytes[size..], counter))
+    })
+}
 
 pub struct Parsers {}
 
@@ -18,15 +34,11 @@ impl Parsers {
     }
 
     fn matter_from_qb64b(bytes: &[u8]) -> ParsideResult<(&[u8], Matter)> {
-        let matter = Matter::new_with_qb64b(bytes)?;
-        let size = matter.full_size()? as usize;
-        Ok((&bytes[size..], matter))
+        matter_wrapper!(Matter::new_with_qb64b, bytes)
     }
 
     fn matter_from_qb2(bytes: &[u8]) -> ParsideResult<(&[u8], Matter)> {
-        let matter = Matter::new_with_qb2(bytes)?;
-        let size = matter.full_size()? as usize;
-        Ok((&bytes[size..], matter))
+        matter_wrapper!(Matter::new_with_qb2, bytes)
     }
 
     #[allow(unused)]
@@ -41,15 +53,11 @@ impl Parsers {
     }
 
     fn diger_from_qb64b(bytes: &[u8]) -> ParsideResult<(&[u8], Matter)> {
-        let matter = <Matter as Diger>::new_with_qb64b(bytes)?;
-        let size = matter.full_size()? as usize;
-        Ok((&bytes[size..], matter))
+        matter_wrapper!(<Matter as Diger>::new_with_qb64b, bytes)
     }
 
     fn diger_from_qb2(bytes: &[u8]) -> ParsideResult<(&[u8], Matter)> {
-        let matter = <Matter as Diger>::new_with_qb2(bytes)?;
-        let size = matter.full_size()? as usize;
-        Ok((&bytes[size..], matter))
+        matter_wrapper!(<Matter as Diger>::new_with_qb2, bytes)
     }
 
     pub(crate) fn verfer_parser<'a>(
@@ -63,15 +71,11 @@ impl Parsers {
     }
 
     fn verfer_from_qb64b(bytes: &[u8]) -> ParsideResult<(&[u8], Matter)> {
-        let matter = <Matter as Verfer>::new_with_qb64b(bytes)?;
-        let size = matter.full_size()? as usize;
-        Ok((&bytes[size..], matter))
+        matter_wrapper!(<Matter as Verfer>::new_with_qb64b, bytes)
     }
 
     fn verfer_from_qb2(bytes: &[u8]) -> ParsideResult<(&[u8], Matter)> {
-        let matter = <Matter as Verfer>::new_with_qb2(bytes)?;
-        let size = matter.full_size()? as usize;
-        Ok((&bytes[size..], matter))
+        matter_wrapper!(<Matter as Verfer>::new_with_qb2, bytes)
     }
 
     pub(crate) fn counter_parser<'a>(
@@ -85,17 +89,11 @@ impl Parsers {
     }
 
     fn counter_from_qb64b(bytes: &[u8]) -> ParsideResult<(&[u8], Counter)> {
-        let counter = Counter::new_with_qb64b(&bytes)?;
-        let table = counter.sizage()?;
-        let (rest, _) = utils::nom::take_bytes(bytes, table.fs)?;
-        Ok((rest, counter))
+        counter_wrapper!(Counter::new_with_qb64b, bytes)
     }
 
     fn counter_from_qb2(bytes: &[u8]) -> ParsideResult<(&[u8], Counter)> {
-        let counter = Counter::new_with_qb2(&bytes)?;
-        let table = counter.sizage()?;
-        let (rest, _) = utils::nom::take_bytes(bytes, table.fs)?;
-        Ok((rest, counter))
+        counter_wrapper!(Counter::new_with_qb2, bytes)
     }
 
     #[allow(unused)]
@@ -110,15 +108,11 @@ impl Parsers {
     }
 
     fn indexer_from_qb64b(bytes: &[u8]) -> ParsideResult<(&[u8], Matter)> {
-        let matter = Matter::new_with_qb64b(bytes)?; // FIXME: here should be another method to parse
-        let size = matter.full_size()? as usize;
-        Ok((&bytes[size..], matter))
+        matter_wrapper!(Matter::new_with_qb64b, bytes) // FIXME: here should be Indexer parser
     }
 
     fn indexer_from_q2(bytes: &[u8]) -> ParsideResult<(&[u8], Matter)> {
-        let matter = Matter::new_with_qb2(bytes)?; // FIXME: here should be another method to parse
-        let size = matter.full_size()? as usize;
-        Ok((&bytes[size..], matter))
+        matter_wrapper!(Matter::new_with_qb2, bytes) // FIXME: here should be Indexer parser
     }
 
     pub(crate) fn matter_list_parser<'a>(
