@@ -88,6 +88,46 @@ impl GroupData {
             .map(|(rest, value)| (rest, GroupData::QuadrupleWithList { value }))
             .map_err(ParsideError::from)
     }
+
+    pub fn single(self) -> ParsideResult<Single> {
+        match self {
+            GroupData::Single { value } => Ok(value),
+            _ => Err(ParsideError::NotExist)
+
+        }
+    }
+
+    pub fn couple(self) -> ParsideResult<Couple> {
+        match self {
+            GroupData::Couple { value } => Ok(value),
+            _ => Err(ParsideError::NotExist)
+
+        }
+    }
+
+    pub fn couple_with_list(self) -> ParsideResult<CoupleWithList> {
+        match self {
+            GroupData::CoupleWithList { value } => Ok(value),
+            _ => Err(ParsideError::NotExist)
+
+        }
+    }
+
+    pub fn quadruple(self) -> ParsideResult<Quadruple> {
+        match self {
+            GroupData::Quadruple { value } => Ok(value),
+            _ => Err(ParsideError::NotExist)
+
+        }
+    }
+
+    pub fn quadruple_with_list(self) -> ParsideResult<QuadrupleWithList> {
+        match self {
+            GroupData::QuadrupleWithList { value } => Ok(value),
+            _ => Err(ParsideError::NotExist)
+
+        }
+    }
 }
 
 impl CesrGroup {
