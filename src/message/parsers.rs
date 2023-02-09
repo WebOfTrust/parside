@@ -7,7 +7,7 @@ use nom::multi::count;
 pub struct Parsers {}
 
 impl Parsers {
-    pub fn matter_parser<'a>(
+    pub(crate) fn matter_parser<'a>(
         cold_code: &ColdCodes,
     ) -> ParsideResult<fn(&'a [u8]) -> nom::IResult<&'a [u8], Matter>> {
         match cold_code {
@@ -17,13 +17,13 @@ impl Parsers {
         }
     }
 
-    pub fn matter_from_qb64b(bytes: &[u8]) -> ParsideResult<(&[u8], Matter)> {
+    fn matter_from_qb64b(bytes: &[u8]) -> ParsideResult<(&[u8], Matter)> {
         let matter = Matter::new_with_qb64b(bytes)?;
         let size = matter.full_size()? as usize;
         Ok((&bytes[size..], matter))
     }
 
-    pub fn matter_from_qb2(bytes: &[u8]) -> ParsideResult<(&[u8], Matter)> {
+    fn matter_from_qb2(bytes: &[u8]) -> ParsideResult<(&[u8], Matter)> {
         let matter = Matter::new_with_qb2(bytes)?;
         let size = matter.full_size()? as usize;
         Ok((&bytes[size..], matter))
