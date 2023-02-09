@@ -2,27 +2,34 @@ pub mod attached_material_quadlets;
 pub mod controller_idx_sigs;
 pub mod first_seen_replay_couples;
 pub mod non_trans_receipt_couples;
-pub mod seql_source_couples;
+pub mod seal_source_couples;
 pub mod trans_idx_sig_groups;
 pub mod trans_last_idx_sig_groups;
 pub mod trans_receipt_quadruples;
 pub mod witness_idx_sigs;
+pub mod sad_path_sig_group;
+pub mod sad_path_sig;
+pub mod pathed_material_quadlets;
 pub mod parsers;
 
-use crate::error::ParsideResult;
+use crate::error::{ParsideError, ParsideResult};
 use crate::message::cold_code::ColdCodes;
 use parsers::Parsers;
 use cesride::Counter;
+use cesride::counter::Codex;
 
 use self::attached_material_quadlets::AttachedMaterialQuadlets;
 use self::controller_idx_sigs::ControllerIdxSigs;
 use self::first_seen_replay_couples::FirstSeenReplayCouples;
 use self::non_trans_receipt_couples::NonTransReceiptCouples;
-use self::seql_source_couples::SealSourceCouples;
+use self::seal_source_couples::SealSourceCouples;
 use self::trans_idx_sig_groups::TransIdxSigGroups;
 use self::trans_last_idx_sig_groups::TransLastIdxSigGroups;
 use self::trans_receipt_quadruples::TransReceiptQuadruples;
 use self::witness_idx_sigs::WitnessIdxSigs;
+use self::sad_path_sig_group::SadPathSigGroup;
+use self::sad_path_sig::SadPathSig;
+use self::pathed_material_quadlets::PathedMaterialQuadlets;
 
 #[derive(Debug)]
 pub struct CesrGroup {
@@ -41,118 +48,88 @@ pub enum CesrGroupVariants {
     FirstSeenReplayCouplesVariant { value: FirstSeenReplayCouples },
     SealSourceCouplesVariant { value: SealSourceCouples },
     AttachedMaterialQuadletsVariant { value: AttachedMaterialQuadlets },
+    SadPathSigGroupVariant { value: SadPathSigGroup },
+    SadPathSigVariant { value: SadPathSig },
+    PathedMaterialQuadletsVariant { value: PathedMaterialQuadlets },
 }
 
 impl CesrGroup {
     pub fn from_stream_bytes<'a>(bytes: &'a [u8]) -> ParsideResult<(&'a [u8], CesrGroup)> {
         let cold_code = ColdCodes::try_from(bytes[0])?;
         let (rest, counter) = Parsers::counter_parser(&cold_code)?(bytes)?;
+        let code = Codex::from_code(&counter.code())?;
 
-        if counter.code() == AttachedMaterialQuadlets::code() {
-            let (rest, group) =
-                AttachedMaterialQuadlets::from_stream_bytes(rest, &counter, &cold_code)?;
-            return Ok((
-                rest,
-                CesrGroup {
-                    counter,
-                    group: CesrGroupVariants::AttachedMaterialQuadletsVariant { value: group },
-                },
-            ));
-        }
+        let (rest, group) =
+            match code {
+                AttachedMaterialQuadlets::CODE => {
+                    let (rest, group) =
+                        AttachedMaterialQuadlets::from_stream_bytes(rest, &counter, &cold_code)?;
+                    (rest, CesrGroupVariants::AttachedMaterialQuadletsVariant { value: group })
+                }
+                ControllerIdxSigs::CODE => {
+                    let (rest, group) =
+                        ControllerIdxSigs::from_stream_bytes(rest, &counter, &cold_code)?;
+                    (rest, CesrGroupVariants::ControllerIdxSigsVariant { value: group })
+                }
+                WitnessIdxSigs::CODE => {
+                    let (rest, group) =
+                        WitnessIdxSigs::from_stream_bytes(rest, &counter, &cold_code)?;
+                    (rest, CesrGroupVariants::WitnessIdxSigsVariant { value: group })
+                }
+                NonTransReceiptCouples::CODE => {
+                    let (rest, group) =
+                        NonTransReceiptCouples::from_stream_bytes(rest, &counter, &cold_code)?;
+                    (rest, CesrGroupVariants::NonTransReceiptCouplesVariant { value: group })
+                }
+                TransReceiptQuadruples::CODE => {
+                    let (rest, group) =
+                        TransReceiptQuadruples::from_stream_bytes(rest, &counter, &cold_code)?;
+                    (rest, CesrGroupVariants::TransReceiptQuadruplesVariant { value: group })
+                }
+                TransIdxSigGroups::CODE => {
+                    let (rest, group) =
+                        TransIdxSigGroups::from_stream_bytes(rest, &counter, &cold_code)?;
+                    (rest, CesrGroupVariants::TransIdxSigGroupsVariant { value: group })
+                }
+                TransLastIdxSigGroups::CODE => {
+                    let (rest, group) =
+                        TransLastIdxSigGroups::from_stream_bytes(rest, &counter, &cold_code)?;
+                    (rest, CesrGroupVariants::TransLastIdxSigGroupsVariant { value: group })
+                }
+                FirstSeenReplayCouples::CODE => {
+                    let (rest, group) =
+                        FirstSeenReplayCouples::from_stream_bytes(rest, &counter, &cold_code)?;
+                    (rest, CesrGroupVariants::FirstSeenReplayCouplesVariant { value: group })
+                }
+                SealSourceCouples::CODE => {
+                    let (rest, group) =
+                        SealSourceCouples::from_stream_bytes(rest, &counter, &cold_code)?;
+                    (rest, CesrGroupVariants::SealSourceCouplesVariant { value: group })
+                }
+                SadPathSigGroup::CODE => {
+                    let (rest, group) =
+                        SadPathSigGroup::from_stream_bytes(rest, &counter, &cold_code)?;
+                    (rest, CesrGroupVariants::SadPathSigGroupVariant { value: group })
+                }
+                SadPathSig::CODE => {
+                    let (rest, group) =
+                        SadPathSig::from_stream_bytes(rest, &counter, &cold_code)?;
+                    (rest, CesrGroupVariants::SadPathSigVariant { value: group })
+                }
+                PathedMaterialQuadlets::CODE => {
+                    let (rest, group) =
+                        PathedMaterialQuadlets::from_stream_bytes(rest, &counter, &cold_code)?;
+                    (rest, CesrGroupVariants::PathedMaterialQuadletsVariant { value: group })
+                }
+                _ => {
+                    return Err(ParsideError::Unexpected(format!("Unexpected counter code {:?}", counter.code())));
+                }
+            };
 
-        if counter.code() == ControllerIdxSigs::code() {
-            let (rest, group) = ControllerIdxSigs::from_stream_bytes(rest, &counter, &cold_code)?;
-            return Ok((
-                rest,
-                CesrGroup {
-                    counter,
-                    group: CesrGroupVariants::ControllerIdxSigsVariant { value: group },
-                },
-            ));
-        }
-
-        if counter.code() == WitnessIdxSigs::code() {
-            let (rest, group) = WitnessIdxSigs::from_stream_bytes(rest, &counter, &cold_code)?;
-            return Ok((
-                rest,
-                CesrGroup {
-                    counter,
-                    group: CesrGroupVariants::WitnessIdxSigsVariant { value: group },
-                },
-            ));
-        }
-
-        if counter.code() == NonTransReceiptCouples::code() {
-            let (rest, group) =
-                NonTransReceiptCouples::from_stream_bytes(rest, &counter, &cold_code)?;
-            return Ok((
-                rest,
-                CesrGroup {
-                    counter,
-                    group: CesrGroupVariants::NonTransReceiptCouplesVariant { value: group },
-                },
-            ));
-        }
-
-        if counter.code() == TransReceiptQuadruples::code() {
-            let (rest, group) =
-                TransReceiptQuadruples::from_stream_bytes(rest, &counter, &cold_code)?;
-            return Ok((
-                rest,
-                CesrGroup {
-                    counter,
-                    group: CesrGroupVariants::TransReceiptQuadruplesVariant { value: group },
-                },
-            ));
-        }
-
-        if counter.code() == TransIdxSigGroups::code() {
-            let (rest, group) = TransIdxSigGroups::from_stream_bytes(rest, &counter, &cold_code)?;
-            return Ok((
-                rest,
-                CesrGroup {
-                    counter,
-                    group: CesrGroupVariants::TransIdxSigGroupsVariant { value: group },
-                },
-            ));
-        }
-
-        if counter.code() == TransLastIdxSigGroups::code() {
-            let (rest, group) =
-                TransLastIdxSigGroups::from_stream_bytes(rest, &counter, &cold_code)?;
-            return Ok((
-                rest,
-                CesrGroup {
-                    counter,
-                    group: CesrGroupVariants::TransLastIdxSigGroupsVariant { value: group },
-                },
-            ));
-        }
-
-        if counter.code() == FirstSeenReplayCouples::code() {
-            let (rest, group) =
-                FirstSeenReplayCouples::from_stream_bytes(rest, &counter, &cold_code)?;
-            return Ok((
-                rest,
-                CesrGroup {
-                    counter,
-                    group: CesrGroupVariants::FirstSeenReplayCouplesVariant { value: group },
-                },
-            ));
-        }
-
-        if counter.code() == SealSourceCouples::code() {
-            let (rest, group) = SealSourceCouples::from_stream_bytes(rest, &counter, &cold_code)?;
-            return Ok((
-                rest,
-                CesrGroup {
-                    counter,
-                    group: CesrGroupVariants::SealSourceCouplesVariant { value: group },
-                },
-            ));
-        }
-
-        unimplemented!();
+        return Ok((
+            rest,
+            CesrGroup { counter, group },
+        ));
     }
 }
 
@@ -167,7 +144,7 @@ pub mod tests {
 
         let (_rest, message) = CesrGroup::from_stream_bytes(stream).unwrap();
 
-        let expected_counter = Counter::new(TransIdxSigGroups::code(), 1);
+        let expected_counter = Counter::new(TransIdxSigGroups::CODE.code(), 1);
         assert_eq!(expected_counter, message.counter);
 
         match message.group {
@@ -196,7 +173,7 @@ pub mod tests {
 
         let (_rest, message) = CesrGroup::from_stream_bytes(stream).unwrap();
 
-        let expected_counter = Counter::new(ControllerIdxSigs::code(), 1);
+        let expected_counter = Counter::new(ControllerIdxSigs::CODE.code(), 1);
         assert_eq!(expected_counter, message.counter);
 
         match message.group {
@@ -217,7 +194,7 @@ pub mod tests {
 
         let (_rest, message) = CesrGroup::from_stream_bytes(stream).unwrap();
 
-        let expected_counter = Counter::new(NonTransReceiptCouples::code(), 1);
+        let expected_counter = Counter::new(NonTransReceiptCouples::CODE.code(), 1);
         assert_eq!(expected_counter, message.counter);
 
         match message.group {
@@ -242,7 +219,7 @@ pub mod tests {
 
         let (_rest, message) = CesrGroup::from_stream_bytes(stream).unwrap();
 
-        let expected_counter = Counter::new(AttachedMaterialQuadlets::code(), 62);
+        let expected_counter = Counter::new(AttachedMaterialQuadlets::CODE.code(), 62);
         assert_eq!(expected_counter, message.counter);
     }
 
@@ -252,7 +229,7 @@ pub mod tests {
 
         let (_rest, message) = CesrGroup::from_stream_bytes(stream).unwrap();
 
-        let expected_counter = Counter::new(TransLastIdxSigGroups::code(), 1);
+        let expected_counter = Counter::new(TransLastIdxSigGroups::CODE.code(), 1);
         assert_eq!(expected_counter, message.counter);
 
         match message.group {

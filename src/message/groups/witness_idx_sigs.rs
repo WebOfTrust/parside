@@ -11,9 +11,7 @@ pub struct WitnessIdxSigs {
 }
 
 impl WitnessIdxSigs {
-    pub(crate) fn code() -> String {
-        Codex::WitnessIdxSigs.code().to_string()
-    }
+    pub const CODE: Codex = Codex::WitnessIdxSigs;
 
     pub(crate) fn from_stream_bytes<'a>(
         bytes: &'a [u8],

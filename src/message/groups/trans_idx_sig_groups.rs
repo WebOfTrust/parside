@@ -12,9 +12,7 @@ pub struct TransIdxSigGroups {
 }
 
 impl TransIdxSigGroups {
-    pub(crate) fn code() -> String {
-        Codex::TransIdxSigGroups.code().to_string()
-    }
+    pub const CODE: Codex = Codex::TransIdxSigGroups;
 
     pub(crate) fn from_stream_bytes<'a>(
         bytes: &'a [u8],
@@ -62,7 +60,7 @@ pub mod tests {
     pub fn test_parse_trans_idx_sig_groups() {
         let stream = br#"EFhg5my9DuMU6gw1CVk6QgkmZKBttWSXDzVzWVmxh0_K0AAAAAAAAAAAAAAAAAAAAAAAEFhg5my9DuMU6gw1CVk6QgkmZKBttWSXDzVzWVmxh0_K-AABAADghKct9eYTuSgSd5wdPSYG06tGX7ZRp_BDnrgbSxJpsJtrA-fP7Pa1W602gHeMrO6HZsD1z3tWV5jGlApFmVIB"#;
 
-        let counter = Counter::new(TransIdxSigGroups::code(), 1);
+        let counter = Counter::new(TransIdxSigGroups::CODE.code(), 1);
 
         let (rest, group) =
             TransIdxSigGroups::from_stream_bytes(stream, &counter, &ColdCodes::CtB64).unwrap();

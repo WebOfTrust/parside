@@ -12,9 +12,7 @@ pub struct TransReceiptQuadruples {
 }
 
 impl TransReceiptQuadruples {
-    pub(crate) fn code() -> String {
-        Codex::TransReceiptQuadruples.code().to_string()
-    }
+    pub const CODE: Codex = Codex::TransReceiptQuadruples;
 
     pub(crate) fn from_stream_bytes<'a>(
         bytes: &'a [u8],

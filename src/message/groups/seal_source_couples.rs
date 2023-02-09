@@ -12,9 +12,7 @@ pub struct SealSourceCouples {
 }
 
 impl SealSourceCouples {
-    pub(crate) fn code() -> String {
-        Codex::SealSourceCouples.code().to_string()
-    }
+    pub const CODE: Codex = Codex::SealSourceCouples;
 
     pub(crate) fn from_stream_bytes<'a>(
         bytes: &'a [u8],

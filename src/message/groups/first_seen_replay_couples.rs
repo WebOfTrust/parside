@@ -12,9 +12,7 @@ pub struct FirstSeenReplayCouples {
 }
 
 impl FirstSeenReplayCouples {
-    pub(crate) fn code() -> String {
-        Codex::FirstSeenReplayCouples.code().to_string()
-    }
+    pub const CODE: Codex = Codex::FirstSeenReplayCouples;
 
     pub(crate) fn from_stream_bytes<'a>(
         bytes: &'a [u8],

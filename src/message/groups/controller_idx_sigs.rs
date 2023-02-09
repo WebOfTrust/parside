@@ -11,9 +11,7 @@ pub struct ControllerIdxSigs {
 }
 
 impl ControllerIdxSigs {
-    pub(crate) fn code() -> String {
-        Codex::ControllerIdxSigs.code().to_string()
-    }
+    pub const CODE: Codex = Codex::ControllerIdxSigs;
 
     pub(crate) fn from_stream_bytes<'a>(
         bytes: &'a [u8],
@@ -35,7 +33,7 @@ pub mod tests {
     pub fn test_parse_controller_idx_sigs() {
         let stream = br#"ABg3q8uNg1A2jhEAdbKGf-QupQhNnmZQx3zIyPLWBe6qqLT5ynytivf9EwJhxyhy87a0x2cezDdil4SsM2xxs0O"#;
 
-        let counter = Counter::new(ControllerIdxSigs::code(), 1);
+        let counter = Counter::new(ControllerIdxSigs::CODE.code(), 1);
         let (rest, group) =
             ControllerIdxSigs::from_stream_bytes(stream, &counter, &ColdCodes::CtB64).unwrap();
 
