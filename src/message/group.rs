@@ -9,7 +9,7 @@ use nom::sequence::tuple;
 #[derive(Debug)]
 pub struct CesrGroup {
     pub counter: Counter,
-    pub group: GroupData,
+    pub value: GroupValue,
 }
 
 type Single = Vec<Matter>;
@@ -19,7 +19,7 @@ type Quadruple = Vec<(Matter, Matter, Matter, Matter)>;
 type QuadrupleWithList = Vec<(Matter, Matter, Matter, Vec<Matter>)>;
 
 #[derive(Debug)]
-pub enum GroupData {
+pub enum GroupValue {
     Single { value: Single },
     Couple { value: Couple },
     CoupleWithList { value: CoupleWithList },
@@ -27,17 +27,17 @@ pub enum GroupData {
     QuadrupleWithList { value: QuadrupleWithList },
 }
 
-impl GroupData {
-    fn parse_single<'a>(bytes: &'a [u8], cold_code: &ColdCodes, amount: usize) -> ParsideResult<(&'a [u8], GroupData)> {
+impl GroupValue {
+    fn parse_single<'a>(bytes: &'a [u8], cold_code: &ColdCodes, amount: usize) -> ParsideResult<(&'a [u8], GroupValue)> {
         count(
             Parsers::matter_parser(&cold_code)?,
             amount,
         )(bytes)
-            .map(|(rest, value)| (rest, GroupData::Single { value }))
+            .map(|(rest, value)| (rest, GroupValue::Single { value }))
             .map_err(ParsideError::from)
     }
 
-    fn parse_couple<'a>(bytes: &'a [u8], cold_code: &ColdCodes, amount: usize) -> ParsideResult<(&'a [u8], GroupData)> {
+    fn parse_couple<'a>(bytes: &'a [u8], cold_code: &ColdCodes, amount: usize) -> ParsideResult<(&'a [u8], GroupValue)> {
         count(
             tuple((
                 Parsers::matter_parser(&cold_code)?,
@@ -45,11 +45,11 @@ impl GroupData {
             )),
             amount,
         )(bytes)
-            .map(|(rest, value)| (rest, GroupData::Couple { value }))
+            .map(|(rest, value)| (rest, GroupValue::Couple { value }))
             .map_err(ParsideError::from)
     }
 
-    fn parse_couple_with_list<'a>(bytes: &'a [u8], cold_code: &ColdCodes, amount: usize) -> ParsideResult<(&'a [u8], GroupData)> {
+    fn parse_couple_with_list<'a>(bytes: &'a [u8], cold_code: &ColdCodes, amount: usize) -> ParsideResult<(&'a [u8], GroupValue)> {
         count(
             tuple((
                 Parsers::matter_parser(&cold_code)?,
@@ -57,11 +57,11 @@ impl GroupData {
             )),
             amount,
         )(bytes)
-            .map(|(rest, value)| (rest, GroupData::CoupleWithList { value }))
+            .map(|(rest, value)| (rest, GroupValue::CoupleWithList { value }))
             .map_err(ParsideError::from)
     }
 
-    fn parse_quadruple<'a>(bytes: &'a [u8], cold_code: &ColdCodes, amount: usize) -> ParsideResult<(&'a [u8], GroupData)> {
+    fn parse_quadruple<'a>(bytes: &'a [u8], cold_code: &ColdCodes, amount: usize) -> ParsideResult<(&'a [u8], GroupValue)> {
         count(
             tuple((
                 Parsers::matter_parser(&cold_code)?,
@@ -71,11 +71,11 @@ impl GroupData {
             )),
             amount,
         )(bytes)
-            .map(|(rest, value)| (rest, GroupData::Quadruple { value }))
+            .map(|(rest, value)| (rest, GroupValue::Quadruple { value }))
             .map_err(ParsideError::from)
     }
 
-    fn parse_quadruple_with_list<'a>(bytes: &'a [u8], cold_code: &ColdCodes, amount: usize) -> ParsideResult<(&'a [u8], GroupData)> {
+    fn parse_quadruple_with_list<'a>(bytes: &'a [u8], cold_code: &ColdCodes, amount: usize) -> ParsideResult<(&'a [u8], GroupValue)> {
         count(
             tuple((
                 Parsers::matter_parser(&cold_code)?,
@@ -85,13 +85,13 @@ impl GroupData {
             )),
             amount,
         )(bytes)
-            .map(|(rest, value)| (rest, GroupData::QuadrupleWithList { value }))
+            .map(|(rest, value)| (rest, GroupValue::QuadrupleWithList { value }))
             .map_err(ParsideError::from)
     }
 
     pub fn single(self) -> ParsideResult<Single> {
         match self {
-            GroupData::Single { value } => Ok(value),
+            GroupValue::Single { value } => Ok(value),
             _ => Err(ParsideError::NotExist)
 
         }
@@ -99,7 +99,7 @@ impl GroupData {
 
     pub fn couple(self) -> ParsideResult<Couple> {
         match self {
-            GroupData::Couple { value } => Ok(value),
+            GroupValue::Couple { value } => Ok(value),
             _ => Err(ParsideError::NotExist)
 
         }
@@ -107,7 +107,7 @@ impl GroupData {
 
     pub fn couple_with_list(self) -> ParsideResult<CoupleWithList> {
         match self {
-            GroupData::CoupleWithList { value } => Ok(value),
+            GroupValue::CoupleWithList { value } => Ok(value),
             _ => Err(ParsideError::NotExist)
 
         }
@@ -115,7 +115,7 @@ impl GroupData {
 
     pub fn quadruple(self) -> ParsideResult<Quadruple> {
         match self {
-            GroupData::Quadruple { value } => Ok(value),
+            GroupValue::Quadruple { value } => Ok(value),
             _ => Err(ParsideError::NotExist)
 
         }
@@ -123,7 +123,7 @@ impl GroupData {
 
     pub fn quadruple_with_list(self) -> ParsideResult<QuadrupleWithList> {
         match self {
-            GroupData::QuadrupleWithList { value } => Ok(value),
+            GroupValue::QuadrupleWithList { value } => Ok(value),
             _ => Err(ParsideError::NotExist)
 
         }
@@ -131,7 +131,7 @@ impl GroupData {
 }
 
 impl CesrGroup {
-    pub fn from_stream_bytes<'a>(bytes: &'a [u8]) -> ParsideResult<(&'a [u8], CesrGroup)> {
+    pub fn from_stream_bytes(bytes: &[u8]) -> ParsideResult<(&[u8], CesrGroup)> {
         let cold_code = ColdCodes::try_from(bytes[0])?;
         let (bytes, counter) = Parsers::counter_parser(&cold_code)?(bytes)?;
         let amount = counter.count() as usize;
@@ -143,28 +143,28 @@ impl CesrGroup {
                     unimplemented!()
                 }
                 Codex::ControllerIdxSigs => {
-                    GroupData::parse_single(bytes, &cold_code, amount)?
+                    GroupValue::parse_single(bytes, &cold_code, amount)?
                 }
                 Codex::WitnessIdxSigs => {
-                    GroupData::parse_single(bytes, &cold_code, amount)?
+                    GroupValue::parse_single(bytes, &cold_code, amount)?
                 }
                 Codex::NonTransReceiptCouples => {
-                    GroupData::parse_couple(bytes, &cold_code, amount)?
+                    GroupValue::parse_couple(bytes, &cold_code, amount)?
                 }
                 Codex::TransReceiptQuadruples => {
-                    GroupData::parse_quadruple(bytes, &cold_code, amount)?
+                    GroupValue::parse_quadruple(bytes, &cold_code, amount)?
                 }
                 Codex::TransIdxSigGroups => {
-                    GroupData::parse_quadruple_with_list(bytes, &cold_code, amount)?
+                    GroupValue::parse_quadruple_with_list(bytes, &cold_code, amount)?
                 }
                 Codex::TransLastIdxSigGroups => {
-                    GroupData::parse_couple_with_list(bytes, &cold_code, amount)?
+                    GroupValue::parse_couple_with_list(bytes, &cold_code, amount)?
                 }
                 Codex::FirstSeenReplayCouples => {
-                    GroupData::parse_couple(bytes, &cold_code, amount)?
+                    GroupValue::parse_couple(bytes, &cold_code, amount)?
                 }
                 Codex::SealSourceCouples => {
-                    GroupData::parse_couple(bytes, &cold_code, amount)?
+                    GroupValue::parse_couple(bytes, &cold_code, amount)?
                 }
                 Codex::SadPathSigGroup => {
                     unimplemented!()
@@ -182,7 +182,7 @@ impl CesrGroup {
 
         return Ok((
             rest,
-            CesrGroup { counter, group },
+            CesrGroup { counter, value: group },
         ));
     }
 }
@@ -201,8 +201,8 @@ pub mod tests {
         let expected_counter = Counter::new(Codex::TransIdxSigGroups.code(), 1);
         assert_eq!(expected_counter, message.counter);
 
-        match message.group {
-            GroupData::QuadrupleWithList { value: group } => {
+        match message.value {
+            GroupValue::QuadrupleWithList { value: group } => {
                 assert_eq!(1, group.len());
                 assert_eq!(
                     MatterCodex::Blake3_256.code().to_string(),
@@ -230,8 +230,8 @@ pub mod tests {
         let expected_counter = Counter::new(Codex::ControllerIdxSigs.code(), 1);
         assert_eq!(expected_counter, message.counter);
 
-        match message.group {
-            GroupData::Single { value: group } => {
+        match message.value {
+            GroupValue::Single { value: group } => {
                 assert_eq!(1, group.len());
                 assert_eq!(
                     MatterCodex::Ed25519_Seed.code().to_string(),
@@ -251,8 +251,8 @@ pub mod tests {
         let expected_counter = Counter::new(Codex::NonTransReceiptCouples.code(), 1);
         assert_eq!(expected_counter, message.counter);
 
-        match message.group {
-            GroupData::Couple { value: group } => {
+        match message.value {
+            GroupValue::Couple { value: group } => {
                 assert_eq!(1, group.len());
                 assert_eq!(
                     MatterCodex::Ed25519N.code().to_string(),
@@ -286,8 +286,8 @@ pub mod tests {
         let expected_counter = Counter::new(Codex::TransLastIdxSigGroups.code(), 1);
         assert_eq!(expected_counter, message.counter);
 
-        match message.group {
-            GroupData::CoupleWithList { value: group } => {
+        match message.value {
+            GroupValue::CoupleWithList { value: group } => {
                 assert_eq!(1, group.len());
                 assert_eq!(
                     MatterCodex::Blake3_256.code().to_string(),
