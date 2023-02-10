@@ -17,7 +17,7 @@ impl CustomPayload {
             .map_err(|err| ParsideError::PayloadDeserializeError(err.to_string()))
     }
 
-    pub fn from_json_stream(s: &[u8]) -> ParsideResult<(&[u8], CustomPayload)> {
+    pub(crate) fn from_json_stream(s: &[u8]) -> ParsideResult<(&[u8], CustomPayload)> {
         let mut stream = serde_json::Deserializer::from_slice(s).into_iter::<JsonValue>();
         match stream.next() {
             Some(Ok(value)) => Ok((&s[stream.byte_offset()..], CustomPayload { value })),
@@ -28,7 +28,7 @@ impl CustomPayload {
         }
     }
 
-    pub fn from_cbor_stream(s: &[u8]) -> ParsideResult<(&[u8], CustomPayload)> {
+    pub(crate) fn from_cbor_stream(s: &[u8]) -> ParsideResult<(&[u8], CustomPayload)> {
         let mut stream = serde_cbor::Deserializer::from_slice(s).into_iter::<JsonValue>();
         match stream.next() {
             Some(Ok(value)) => Ok((&s[stream.byte_offset()..], CustomPayload { value })),
@@ -39,7 +39,7 @@ impl CustomPayload {
         }
     }
 
-    pub fn from_mgpk_stream(s: &[u8]) -> ParsideResult<(&[u8], CustomPayload)> {
+    pub(crate) fn from_mgpk_stream(s: &[u8]) -> ParsideResult<(&[u8], CustomPayload)> {
         let mut deser = serde_mgpk::Deserializer::new(Cursor::new(s));
         match Deserialize::deserialize(&mut deser) {
             Ok(value) => Ok((

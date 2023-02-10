@@ -1,0 +1,270 @@
+[Error]
+enum ParsideError {
+    "PayloadDeserializeError",
+    "StreamDeserializationError",
+    "EmptyBytesStream",
+    "NotExist",
+    "Unexpected",
+    "Common",
+};
+
+dictionary Matter {
+  sequence<u8> raw;
+  string code;
+  u32 size;
+};
+
+dictionary AttachedMaterialQuadlets {
+  sequence<Matter> value;
+};
+
+dictionary ControllerIdxSigs {
+  sequence<Matter> value;
+};
+
+dictionary FirstSeenReplayCouple {
+  Matter firner;
+  Matter dater;
+};
+
+dictionary FirstSeenReplayCouples {
+  sequence<FirstSeenReplayCouple> value;
+};
+
+dictionary NonTransReceiptCouple {
+  Matter verfer;
+  Matter cigar;
+};
+
+dictionary PathedMaterialQuadlets {
+  sequence<Matter> value;
+};
+
+dictionary SadPathSig {
+  sequence<Matter> value;
+};
+
+dictionary SadPathSigGroup {
+  sequence<Matter> value;
+};
+
+dictionary NonTransReceiptCouples {
+  sequence<NonTransReceiptCouple> value;
+};
+
+dictionary SealSourceCouple {
+  Matter seqner;
+  Matter saider;
+};
+
+dictionary SealSourceCouples {
+  sequence<SealSourceCouple> value;
+};
+
+dictionary TransIdxSigGroup {
+  Matter prefixer;
+  Matter seqner;
+  Matter saider;
+  ControllerIdxSigs isigers;
+};
+
+dictionary TransIdxSigGroups {
+  sequence<TransIdxSigGroup> value;
+};
+
+dictionary TransLastIdxSigGroup {
+  Matter prefixer;
+  ControllerIdxSigs isigers;
+};
+
+dictionary TransLastIdxSigGroups {
+  sequence<TransLastIdxSigGroup> value;
+};
+
+dictionary TransReceiptQuadruple {
+  Matter prefixer;
+  Matter seqner;
+  Matter saider;
+  Matter siger;
+};
+
+dictionary TransReceiptQuadruples {
+  sequence<TransReceiptQuadruple> value;
+};
+
+dictionary WitnessIdxSigs {
+  sequence<Matter> value;
+};
+
+[Custom]
+typedef string JsonValue;
+
+dictionary CustomPayload {
+  JsonValue value;
+};
+
+[Enum]
+interface CesrGroup {
+    ControllerIdxSigsVariant(ControllerIdxSigs value);
+    WitnessIdxSigsVariant(WitnessIdxSigs value);
+    NonTransReceiptCouplesVariant(NonTransReceiptCouples value);
+    TransReceiptQuadruplesVariant(TransReceiptQuadruples value);
+    TransIdxSigGroupsVariant(TransIdxSigGroups value);
+    TransLastIdxSigGroupsVariant(TransLastIdxSigGroups value);
+    FirstSeenReplayCouplesVariant(FirstSeenReplayCouples value);
+    SealSourceCouplesVariant(SealSourceCouples value);
+    AttachedMaterialQuadletsVariant(AttachedMaterialQuadlets value);
+    SadPathSigGroupVariant(SadPathSigGroup value);
+    SadPathSigVariant(SadPathSig value);
+    PathedMaterialQuadletsVariant(PathedMaterialQuadlets value);
+};
+
+[Enum]
+interface Message {
+    Custom(CustomPayload value);
+    Group(CesrGroup value);
+};
+
+dictionary MessageList {
+  sequence<Message> messages;
+};
+
+dictionary MessageFromStreamResult {
+  sequence<u8> rest;
+  Message message;
+};
+
+dictionary MessageListFromStreamResult {
+  sequence<u8> rest;
+  MessageList messages;
+};
+
+namespace parside {
+    [Throws=ParsideError]
+    Matter matter_new_with_code_and_raw([ByRef] string code, [ByRef] sequence<u8> raw, u64 raw_size);
+    [Throws=ParsideError]
+    Matter matter_new_with_qb64([ByRef] string qb64);
+    [Throws=ParsideError]
+    Matter matter_new_with_qb64b([ByRef] sequence<u8> qb64b);
+    [Throws=ParsideError]
+    Matter matter_new_with_qb2([ByRef] sequence<u8> qb2);
+    string matter_code([ByRef] Matter matter);
+    u32 matter_size([ByRef] Matter matter);
+    sequence<u8> matter_raw([ByRef] Matter matter);
+    [Throws=ParsideError]
+    string matter_qb64([ByRef] Matter matter);
+    [Throws=ParsideError]
+    sequence<u8> matter_qb64b([ByRef] Matter matter);
+    [Throws=ParsideError]
+    sequence<u8> matter_qb2([ByRef] Matter matter);
+    [Throws=ParsideError]
+    u32 matter_full_size([ByRef] Matter matter);
+
+    [Throws=ParsideError]
+    MessageFromStreamResult message_from_stream_bytes([ByRef] sequence<u8> bytes);
+
+    [Throws=ParsideError]
+    MessageListFromStreamResult message_list_from_stream_bytes([ByRef] sequence<u8> bytes);
+
+    AttachedMaterialQuadlets attached_material_quadlets_create(sequence<Matter> value);
+    [Throws=ParsideError]
+    string attached_material_quadlets_qb64([ByRef] AttachedMaterialQuadlets attached_material_quadlets);
+    [Throws=ParsideError]
+    sequence<u8> attached_material_quadlets_qb64b([ByRef] AttachedMaterialQuadlets attached_material_quadlets);
+    [Throws=ParsideError]
+    sequence<u8> attached_material_quadlets_qb2([ByRef] AttachedMaterialQuadlets attached_material_quadlets);
+
+    ControllerIdxSigs controller_idx_sigs_create(sequence<Matter> value);
+    [Throws=ParsideError]
+    string controller_idx_sigs_qb64([ByRef] ControllerIdxSigs controller_idx_sigs);
+    [Throws=ParsideError]
+    sequence<u8> controller_idx_sigs_qb64b([ByRef] ControllerIdxSigs controller_idx_sigs);
+    [Throws=ParsideError]
+    sequence<u8> controller_idx_sigs_qb2([ByRef] ControllerIdxSigs controller_idx_sigs);
+
+    FirstSeenReplayCouple first_seen_replay_couple_create(Matter firner, Matter dater);
+    FirstSeenReplayCouples first_seen_replay_couples_create(sequence<FirstSeenReplayCouple> value);
+    [Throws=ParsideError]
+    string first_seen_replay_couples_qb64([ByRef] FirstSeenReplayCouples first_seen_replay_couples);
+    [Throws=ParsideError]
+    sequence<u8> first_seen_replay_couples_qb64b([ByRef] FirstSeenReplayCouples first_seen_replay_couples);
+    [Throws=ParsideError]
+    sequence<u8> first_seen_replay_couples_qb2([ByRef] FirstSeenReplayCouples first_seen_replay_couples);
+
+    NonTransReceiptCouple non_trans_receipt_couple_create(Matter verfer, Matter cigar);
+    NonTransReceiptCouples non_trans_receipt_couples_create(sequence<NonTransReceiptCouple> value);
+    [Throws=ParsideError]
+    string non_trans_receipt_couples_qb64([ByRef] NonTransReceiptCouples non_trans_receipt_couples);
+    [Throws=ParsideError]
+    sequence<u8> non_trans_receipt_couples_qb64b([ByRef] NonTransReceiptCouples non_trans_receipt_couples);
+    [Throws=ParsideError]
+    sequence<u8> non_trans_receipt_couples_qb2([ByRef] NonTransReceiptCouples non_trans_receipt_couples);
+
+    PathedMaterialQuadlets pathed_material_quadlets_create(sequence<Matter> value);
+    [Throws=ParsideError]
+    string pathed_material_quadlets_qb64([ByRef] PathedMaterialQuadlets pathed_material_quadlets);
+    [Throws=ParsideError]
+    sequence<u8> pathed_material_quadlets_qb64b([ByRef] PathedMaterialQuadlets pathed_material_quadlets);
+    [Throws=ParsideError]
+    sequence<u8> pathed_material_quadlets_qb2([ByRef] PathedMaterialQuadlets pathed_material_quadlets);
+
+    SadPathSig sad_path_sig_create(sequence<Matter> value);
+    [Throws=ParsideError]
+    string sad_path_sig_qb64([ByRef] SadPathSig sad_path_sig);
+    [Throws=ParsideError]
+    sequence<u8> sad_path_sig_qb64b([ByRef] SadPathSig sad_path_sig);
+    [Throws=ParsideError]
+    sequence<u8> sad_path_sig_qb2([ByRef] SadPathSig sad_path_sig);
+
+    SadPathSigGroup sad_path_sig_group_create(sequence<Matter> value);
+    [Throws=ParsideError]
+    string sad_path_sig_group_qb64([ByRef] SadPathSigGroup sad_path_sig_group);
+    [Throws=ParsideError]
+    sequence<u8> sad_path_sig_group_qb64b([ByRef] SadPathSigGroup sad_path_sig_group);
+    [Throws=ParsideError]
+    sequence<u8> sad_path_sig_group_qb2([ByRef] SadPathSigGroup sad_path_sig_group);
+
+    SealSourceCouple seal_source_couple_create(Matter seqner, Matter saider);
+    SealSourceCouples seal_source_couples_create(sequence<SealSourceCouple> value);
+    [Throws=ParsideError]
+    string seal_source_couples_qb64([ByRef] SealSourceCouples seal_source_couples);
+    [Throws=ParsideError]
+    sequence<u8> seal_source_couples_qb64b([ByRef] SealSourceCouples seal_source_couples);
+    [Throws=ParsideError]
+    sequence<u8> seal_source_couples_qb2([ByRef] SealSourceCouples seal_source_couples);
+
+    TransIdxSigGroup trans_idx_sig_group_create(Matter prefixer, Matter seqner, Matter saider, ControllerIdxSigs isigers);
+    TransIdxSigGroups trans_idx_sig_groups_create(sequence<TransIdxSigGroup> value);
+    [Throws=ParsideError]
+    string trans_idx_sig_groups_qb64([ByRef] TransIdxSigGroups trans_idx_sig_groups);
+    [Throws=ParsideError]
+    sequence<u8> trans_idx_sig_groups_qb64b([ByRef] TransIdxSigGroups trans_idx_sig_groups);
+    [Throws=ParsideError]
+    sequence<u8> trans_idx_sig_groups_qb2([ByRef] TransIdxSigGroups trans_idx_sig_groups);
+
+    TransLastIdxSigGroup trans_last_idx_sig_group_create(Matter prefixer, ControllerIdxSigs isigers);
+    TransLastIdxSigGroups trans_last_idx_sig_groups_create(sequence<TransLastIdxSigGroup> value);
+    [Throws=ParsideError]
+    string trans_last_idx_sig_groups_qb64([ByRef] TransLastIdxSigGroups trans_last_idx_sig_groups);
+    [Throws=ParsideError]
+    sequence<u8> trans_last_idx_sig_groups_qb64b([ByRef] TransLastIdxSigGroups trans_last_idx_sig_groups);
+    [Throws=ParsideError]
+    sequence<u8> trans_last_idx_sig_groups_qb2([ByRef] TransLastIdxSigGroups trans_last_idx_sig_groups);
+
+    TransReceiptQuadruple trans_receipt_quadruple_create(Matter prefixer, Matter seqner, Matter saider, Matter siger);
+    TransReceiptQuadruples trans_receipt_quadruples_create(sequence<TransReceiptQuadruple> value);
+    [Throws=ParsideError]
+    string trans_receipt_quadruples_qb64([ByRef] TransReceiptQuadruples trans_receipt_quadruples);
+    [Throws=ParsideError]
+    sequence<u8> trans_receipt_quadruples_qb64b([ByRef] TransReceiptQuadruples trans_receipt_quadruples);
+    [Throws=ParsideError]
+    sequence<u8> trans_receipt_quadruples_qb2([ByRef] TransReceiptQuadruples trans_receipt_quadruples);
+
+    WitnessIdxSigs witness_ids_sigs_create(sequence<Matter> value);
+    [Throws=ParsideError]
+    string witness_ids_sigs_qb64([ByRef] WitnessIdxSigs witness_ids_sigs);
+    [Throws=ParsideError]
+    sequence<u8> witness_ids_sigs_qb64b([ByRef] WitnessIdxSigs witness_ids_sigs);
+    [Throws=ParsideError]
+    sequence<u8> witness_ids_sigs_qb2([ByRef] WitnessIdxSigs witness_ids_sigs);
+};

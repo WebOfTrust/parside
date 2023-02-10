@@ -3,7 +3,7 @@ use serde::de::DeserializeOwned;
 use crate::error::{ParsideError, ParsideResult};
 use crate::message::custom_payload::CustomPayload;
 use crate::message::groups::CesrGroup;
-use crate::message::cold_code::ColdCodes;
+use crate::message::cold_code::ColdCode;
 
 #[derive(Debug)]
 pub enum Message {
@@ -17,19 +17,19 @@ impl Message {
             return Err(ParsideError::EmptyBytesStream);
         }
 
-        let cold_code = ColdCodes::try_from(bytes[0])?;
+        let cold_code = ColdCode::try_from(bytes[0])?;
         match cold_code {
-            ColdCodes::CtB64 | ColdCodes::CtOpB2 | ColdCodes::OpB64 => {
+            ColdCode::CtB64 | ColdCode::CtOpB2 | ColdCode::OpB64 => {
                 CesrGroup::from_stream_bytes(bytes)
                     .map(|(rest, value)| (rest, Message::Group { value }))
             }
-            ColdCodes::JSON => CustomPayload::from_json_stream(bytes)
+            ColdCode::JSON => CustomPayload::from_json_stream(bytes)
                 .map(|(rest, value)| (rest, Message::Custom { value })),
-            ColdCodes::CBOR => CustomPayload::from_cbor_stream(bytes)
+            ColdCode::CBOR => CustomPayload::from_cbor_stream(bytes)
                 .map(|(rest, value)| (rest, Message::Custom { value })),
-            ColdCodes::MGPK1 | ColdCodes::MGPK2 => CustomPayload::from_mgpk_stream(bytes)
+            ColdCode::MGPK1 | ColdCode::MGPK2 => CustomPayload::from_mgpk_stream(bytes)
                 .map(|(rest, value)| (rest, Message::Custom { value })),
-            ColdCodes::Free => Err(ParsideError::Unexpected(format!(
+            ColdCode::Free => Err(ParsideError::Unexpected(format!(
                 "Unsupported cold code {}",
                 bytes[0]
             ))),

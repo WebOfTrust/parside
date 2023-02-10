@@ -1,5 +1,5 @@
 use crate::error::{ParsideError, ParsideResult};
-use crate::message::cold_code::ColdCodes;
+use crate::message::cold_code::ColdCode;
 use crate::nomify;
 use cesride::{Counter, Matter, Diger, Verfer};
 use nom::multi::count;
@@ -24,11 +24,11 @@ pub struct Parsers {}
 
 impl Parsers {
     pub(crate) fn matter_parser<'a>(
-        cold_code: &ColdCodes,
+        cold_code: &ColdCode,
     ) -> ParsideResult<fn(&'a [u8]) -> nom::IResult<&'a [u8], Matter>> {
         match cold_code {
-            ColdCodes::CtB64 | ColdCodes::OpB64 => Ok(nomify!(Self::matter_from_qb64b)),
-            ColdCodes::CtOpB2 => Ok(nomify!(Self::matter_from_qb2)),
+            ColdCode::CtB64 | ColdCode::OpB64 => Ok(nomify!(Self::matter_from_qb64b)),
+            ColdCode::CtOpB2 => Ok(nomify!(Self::matter_from_qb2)),
             _ => Err(ParsideError::Unexpected("Unexpected cold code".to_string())),
         }
     }
@@ -43,11 +43,11 @@ impl Parsers {
 
     #[allow(unused)]
     pub(crate) fn diger_parser<'a>(
-        cold_code: &ColdCodes,
+        cold_code: &ColdCode,
     ) -> ParsideResult<fn(&'a [u8]) -> nom::IResult<&'a [u8], Matter>> {
         match cold_code {
-            ColdCodes::CtB64 | ColdCodes::OpB64 => Ok(nomify!(Self::diger_from_qb64b)),
-            ColdCodes::CtOpB2 => Ok(nomify!(Self::diger_from_qb2)),
+            ColdCode::CtB64 | ColdCode::OpB64 => Ok(nomify!(Self::diger_from_qb64b)),
+            ColdCode::CtOpB2 => Ok(nomify!(Self::diger_from_qb2)),
             _ => Err(ParsideError::Unexpected("Unexpected cold code".to_string())),
         }
     }
@@ -61,11 +61,11 @@ impl Parsers {
     }
 
     pub(crate) fn verfer_parser<'a>(
-        cold_code: &ColdCodes,
+        cold_code: &ColdCode,
     ) -> ParsideResult<fn(&'a [u8]) -> nom::IResult<&'a [u8], Matter>> {
         match cold_code {
-            ColdCodes::CtB64 | ColdCodes::OpB64 => Ok(nomify!(Self::verfer_from_qb64b)),
-            ColdCodes::CtOpB2 => Ok(nomify!(Self::verfer_from_qb2)),
+            ColdCode::CtB64 | ColdCode::OpB64 => Ok(nomify!(Self::verfer_from_qb64b)),
+            ColdCode::CtOpB2 => Ok(nomify!(Self::verfer_from_qb2)),
             _ => Err(ParsideError::Unexpected("Unexpected cold code".to_string())),
         }
     }
@@ -79,11 +79,11 @@ impl Parsers {
     }
 
     pub(crate) fn counter_parser<'a>(
-        cold_code: &ColdCodes,
+        cold_code: &ColdCode,
     ) -> ParsideResult<fn(&'a [u8]) -> nom::IResult<&'a [u8], Counter>> {
         match cold_code {
-            ColdCodes::CtB64 | ColdCodes::OpB64 => Ok(nomify!(Self::counter_from_qb64b)),
-            ColdCodes::CtOpB2 => Ok(nomify!(Self::counter_from_qb2)),
+            ColdCode::CtB64 | ColdCode::OpB64 => Ok(nomify!(Self::counter_from_qb64b)),
+            ColdCode::CtOpB2 => Ok(nomify!(Self::counter_from_qb2)),
             _ => Err(ParsideError::Unexpected("Unexpected cold code".to_string())),
         }
     }
@@ -98,11 +98,11 @@ impl Parsers {
 
     #[allow(unused)]
     pub(crate) fn indexer_parser<'a>(
-        cold_code: &ColdCodes,
+        cold_code: &ColdCode,
     ) -> ParsideResult<fn(&'a [u8]) -> nom::IResult<&'a [u8], Matter>> {
         match cold_code {
-            ColdCodes::CtB64 | ColdCodes::OpB64 => Ok(nomify!(Self::indexer_from_qb64b)),
-            ColdCodes::CtOpB2 => Ok(nomify!(Self::indexer_from_q2)),
+            ColdCode::CtB64 | ColdCode::OpB64 => Ok(nomify!(Self::indexer_from_qb64b)),
+            ColdCode::CtOpB2 => Ok(nomify!(Self::indexer_from_q2)),
             _ => Err(ParsideError::Unexpected("Unexpected cold code".to_string())),
         }
     }
@@ -116,11 +116,11 @@ impl Parsers {
     }
 
     pub(crate) fn matter_list_parser<'a>(
-        cold_code: &ColdCodes,
+        cold_code: &ColdCode,
     ) -> ParsideResult<fn(&'a [u8]) -> nom::IResult<&'a [u8], Vec<Matter>>> {
         match cold_code {
-            ColdCodes::CtB64 | ColdCodes::OpB64 => Ok(nomify!(Self::matter_list_from_qb64b)),
-            ColdCodes::CtOpB2 => Ok(nomify!(Self::matter_list_from_q2)),
+            ColdCode::CtB64 | ColdCode::OpB64 => Ok(nomify!(Self::matter_list_from_qb64b)),
+            ColdCode::CtOpB2 => Ok(nomify!(Self::matter_list_from_q2)),
             _ => Err(ParsideError::Unexpected("Unexpected cold code".to_string())),
         }
     }

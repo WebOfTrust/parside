@@ -5,7 +5,7 @@ use crate::error::{ParsideError, ParsideResult};
 
 #[repr(u8)]
 #[derive(FromPrimitive, ToPrimitive, Debug, Clone)]
-pub enum ColdCodes {
+pub(crate) enum ColdCode {
     // not taken
     Free = 0b000,
     // CountCode Base64
@@ -24,7 +24,7 @@ pub enum ColdCodes {
     CtOpB2 = 0b111,
 }
 
-impl TryFrom<u8> for ColdCodes {
+impl TryFrom<u8> for ColdCode {
     type Error = ParsideError;
 
     fn try_from(byte: u8) -> ParsideResult<Self> {

@@ -10,25 +10,25 @@ pub mod witness_idx_sigs;
 pub mod sad_path_sig_group;
 pub mod sad_path_sig;
 pub mod pathed_material_quadlets;
-pub mod parsers;
+mod parsers;
 
 use crate::error::{ParsideError, ParsideResult};
-use crate::message::cold_code::ColdCodes;
+use crate::message::cold_code::ColdCode;
 use parsers::Parsers;
 use cesride::counter::Codex;
 
-use self::attached_material_quadlets::AttachedMaterialQuadlets;
-use self::controller_idx_sigs::ControllerIdxSigs;
-use self::first_seen_replay_couples::FirstSeenReplayCouples;
-use self::non_trans_receipt_couples::NonTransReceiptCouples;
-use self::seal_source_couples::SealSourceCouples;
-use self::trans_idx_sig_groups::TransIdxSigGroups;
-use self::trans_last_idx_sig_groups::TransLastIdxSigGroups;
-use self::trans_receipt_quadruples::TransReceiptQuadruples;
-use self::witness_idx_sigs::WitnessIdxSigs;
-use self::sad_path_sig_group::SadPathSigGroup;
-use self::sad_path_sig::SadPathSig;
-use self::pathed_material_quadlets::PathedMaterialQuadlets;
+pub use self::attached_material_quadlets::AttachedMaterialQuadlets;
+pub use self::controller_idx_sigs::ControllerIdxSigs;
+pub use self::first_seen_replay_couples::{FirstSeenReplayCouples, FirstSeenReplayCouple};
+pub use self::non_trans_receipt_couples::{NonTransReceiptCouples, NonTransReceiptCouple};
+pub use self::seal_source_couples::{SealSourceCouples, SealSourceCouple};
+pub use self::trans_idx_sig_groups::{TransIdxSigGroups, TransIdxSigGroup};
+pub use self::trans_last_idx_sig_groups::{TransLastIdxSigGroups, TransLastIdxSigGroup};
+pub use self::trans_receipt_quadruples::{TransReceiptQuadruples, TransReceiptQuadruple};
+pub use self::witness_idx_sigs::WitnessIdxSigs;
+pub use self::sad_path_sig_group::SadPathSigGroup;
+pub use self::sad_path_sig::SadPathSig;
+pub use self::pathed_material_quadlets::PathedMaterialQuadlets;
 
 #[derive(Debug)]
 pub enum CesrGroup {
@@ -47,8 +47,8 @@ pub enum CesrGroup {
 }
 
 impl CesrGroup {
-    pub fn from_stream_bytes<'a>(bytes: &'a [u8]) -> ParsideResult<(&'a [u8], CesrGroup)> {
-        let cold_code = ColdCodes::try_from(bytes[0])?;
+    pub fn from_stream_bytes(bytes: &[u8]) -> ParsideResult<(&[u8], CesrGroup)> {
+        let cold_code = ColdCode::try_from(bytes[0])?;
         let (rest, counter) = Parsers::counter_parser(&cold_code)?(bytes)?;
         let code = Codex::from_code(&counter.code())?;
 

@@ -1,5 +1,6 @@
-mod error;
+pub mod error;
 pub mod message;
 mod utils;
 
-pub use message::{Message, MessageList};
+pub use message::{Message, MessageList, CesrGroup, CustomPayload};
+pub use cesride::Matter;

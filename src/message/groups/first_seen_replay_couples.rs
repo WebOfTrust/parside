@@ -1,8 +1,8 @@
 use crate::error::ParsideResult;
-use crate::message::cold_code::ColdCodes;
+use crate::message::cold_code::ColdCode;
 use crate::message::groups::parsers::Parsers;
-use cesride::counter::Codex;
 use cesride::{Counter, Matter};
+use cesride::counter::Codex as CounterCodex;
 use nom::multi::count;
 use nom::sequence::tuple;
 
@@ -12,16 +12,51 @@ pub struct FirstSeenReplayCouples {
 }
 
 impl FirstSeenReplayCouples {
-    pub const CODE: Codex = Codex::FirstSeenReplayCouples;
+    pub const CODE: CounterCodex = CounterCodex::FirstSeenReplayCouples;
 
     pub fn new(value: Vec<FirstSeenReplayCouple>) -> Self {
         Self { value }
     }
 
+    pub fn counter(&self) -> Counter {
+        Counter::new(&Self::CODE.code(), self.count())
+    }
+
+    pub fn count(&self) -> u32 {
+        self.value.len() as u32
+    }
+
+    pub fn qb64(&self) -> ParsideResult<String> {
+        let mut out = self.counter().qb64()?;
+        for couple in self.value.iter() {
+            out.push_str(&couple.dater.qb64()?);
+            out.push_str(&couple.firner.qb64()?);
+        }
+        Ok(out)
+    }
+
+    pub fn qb64b(&self) -> ParsideResult<Vec<u8>> {
+        let mut out = self.counter().qb64b()?;
+        for couple in self.value.iter() {
+            out.extend_from_slice(&couple.dater.qb64b()?);
+            out.extend_from_slice(&couple.firner.qb64b()?);
+        }
+        Ok(out)
+    }
+
+    pub fn qb2(&self) -> ParsideResult<Vec<u8>> {
+        let mut out = self.counter().qb2()?;
+        for couple in self.value.iter() {
+            out.extend_from_slice(&couple.dater.qb2()?);
+            out.extend_from_slice(&couple.firner.qb2()?);
+        }
+        Ok(out)
+    }
+
     pub(crate) fn from_stream_bytes<'a>(
         bytes: &'a [u8],
         counter: &Counter,
-        cold_code: &ColdCodes,
+        cold_code: &ColdCode,
     ) -> ParsideResult<(&'a [u8], FirstSeenReplayCouples)> {
         let (rest, body) = count(
             tuple((
