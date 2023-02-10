@@ -5,6 +5,7 @@ use cesride::counter::Codex;
 use cesride::{Counter, Matter};
 use nom::multi::count;
 use nom::sequence::tuple;
+use crate::message::Group;
 use crate::message::groups::controller_idx_sigs::ControllerIdxSigs;
 
 #[derive(Debug, Clone, Default)]

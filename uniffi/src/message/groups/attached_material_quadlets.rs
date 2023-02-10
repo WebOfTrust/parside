@@ -1,5 +1,5 @@
 use parside::error::ParsideResult;
-use parside::Matter;
+use parside::{Matter, Group};
 pub use parside::message::groups::AttachedMaterialQuadlets;
 
 pub fn attached_material_quadlets_create(value: Vec<Matter>) -> AttachedMaterialQuadlets {

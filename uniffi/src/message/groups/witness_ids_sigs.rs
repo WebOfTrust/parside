@@ -1,9 +1,7 @@
 use parside::error::ParsideResult;
-use parside::Matter;
+use parside::{Matter, Group};
 pub use parside::message::groups::{
     WitnessIdxSigs,
-    SealSourceCouple,
-    ControllerIdxSigs
 };
 
 pub fn witness_ids_sigs_create(value: Vec<Matter>) -> WitnessIdxSigs {

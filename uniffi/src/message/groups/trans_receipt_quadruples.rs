@@ -1,10 +1,8 @@
 use parside::error::ParsideResult;
-use parside::Matter;
+use parside::{Matter, Group};
 pub use parside::message::groups::{
     TransReceiptQuadruples,
     TransReceiptQuadruple,
-    SealSourceCouple,
-    ControllerIdxSigs
 };
 
 pub fn trans_receipt_quadruple_create(prefixer: Matter, seqner: Matter, saider: Matter, siger: Matter) -> TransReceiptQuadruple {

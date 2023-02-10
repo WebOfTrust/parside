@@ -1,3 +1,4 @@
+pub mod group;
 pub mod attached_material_quadlets;
 pub mod controller_idx_sigs;
 pub mod first_seen_replay_couples;
@@ -17,6 +18,7 @@ use crate::message::cold_code::ColdCode;
 use parsers::Parsers;
 use cesride::counter::Codex;
 
+pub use self::group::{GroupItem, Group};
 pub use self::attached_material_quadlets::AttachedMaterialQuadlets;
 pub use self::controller_idx_sigs::ControllerIdxSigs;
 pub use self::first_seen_replay_couples::{FirstSeenReplayCouples, FirstSeenReplayCouple};

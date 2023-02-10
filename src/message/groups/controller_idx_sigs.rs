@@ -4,51 +4,26 @@ use crate::message::groups::parsers::Parsers;
 use cesride::{Counter, Matter};
 use cesride::counter::Codex as CounterCodex;
 use nom::multi::count;
+use crate::message::Group;
 
 #[derive(Debug, Clone, Default)]
 pub struct ControllerIdxSigs {
     pub value: Vec<Matter>,
 }
 
-impl ControllerIdxSigs {
-    pub const CODE: CounterCodex = CounterCodex::ControllerIdxSigs;
+impl Group<Matter> for ControllerIdxSigs {
+    const CODE: CounterCodex = CounterCodex::ControllerIdxSigs;
 
-    pub fn new(value: Vec<Matter>) -> Self {
+    fn new(value: Vec<Matter>) -> Self {
         Self { value }
     }
 
-    pub fn counter(&self) -> Counter {
-        Counter::new(&Self::CODE.code(), self.count())
+    fn value(&self) -> &Vec<Matter> {
+        &self.value
     }
+}
 
-    pub fn count(&self) -> u32 {
-        self.value.len() as u32
-    }
-
-    pub fn qb64(&self) -> ParsideResult<String> {
-        let mut out = self.counter().qb64()?;
-        for matter in self.value.iter() {
-            out.push_str(&matter.qb64()?);
-        }
-        Ok(out)
-    }
-
-    pub fn qb64b(&self) -> ParsideResult<Vec<u8>> {
-        let mut out = self.counter().qb64b()?;
-        for matter in self.value.iter() {
-            out.extend_from_slice(&matter.qb64b()?);
-        }
-        Ok(out)
-    }
-
-    pub fn qb2(&self) -> ParsideResult<Vec<u8>> {
-        let mut out = self.counter().qb2()?;
-        for matter in self.value.iter() {
-            out.extend_from_slice(&matter.qb2()?);
-        }
-        Ok(out)
-    }
-
+impl ControllerIdxSigs {
     pub(crate) fn from_stream_bytes<'a>(
         bytes: &'a [u8],
         counter: &Counter,

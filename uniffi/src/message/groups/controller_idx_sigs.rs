@@ -1,5 +1,5 @@
 use parside::error::ParsideResult;
-use parside::Matter;
+use parside::{Matter, Group};
 pub use parside::message::groups::ControllerIdxSigs;
 
 pub fn controller_idx_sigs_create(value: Vec<Matter>) -> ControllerIdxSigs {

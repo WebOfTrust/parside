@@ -5,54 +5,26 @@ use cesride::counter::Codex;
 use cesride::{Counter, Matter};
 use nom::multi::count;
 use nom::sequence::tuple;
+use crate::message::{Group, GroupItem};
 
 #[derive(Debug, Clone, Default)]
 pub struct NonTransReceiptCouples {
     pub value: Vec<NonTransReceiptCouple>,
 }
 
-impl NonTransReceiptCouples {
-    pub const CODE: Codex = Codex::NonTransReceiptCouples;
+impl Group<NonTransReceiptCouple> for NonTransReceiptCouples {
+    const CODE: Codex = Codex::NonTransReceiptCouples;
 
-    pub fn new(value: Vec<NonTransReceiptCouple>) -> Self {
+    fn new(value: Vec<NonTransReceiptCouple>) -> Self {
         Self { value }
     }
 
-    pub fn counter(&self) -> Counter {
-        Counter::new(&Self::CODE.code(), self.count())
+    fn value(&self) -> &Vec<NonTransReceiptCouple> {
+        &self.value
     }
+}
 
-    pub fn count(&self) -> u32 {
-        self.value.len() as u32
-    }
-
-    pub fn qb64(&self) -> ParsideResult<String> {
-        let mut out = self.counter().qb64()?;
-        for couple in self.value.iter() {
-            out.push_str(&couple.verfer.qb64()?);
-            out.push_str(&couple.cigar.qb64()?);
-        }
-        Ok(out)
-    }
-
-    pub fn qb64b(&self) -> ParsideResult<Vec<u8>> {
-        let mut out = self.counter().qb64b()?;
-        for couple in self.value.iter() {
-            out.extend_from_slice(&couple.verfer.qb64b()?);
-            out.extend_from_slice(&couple.cigar.qb64b()?);
-        }
-        Ok(out)
-    }
-
-    pub fn qb2(&self) -> ParsideResult<Vec<u8>> {
-        let mut out = self.counter().qb2()?;
-        for couple in self.value.iter() {
-            out.extend_from_slice(&couple.verfer.qb2()?);
-            out.extend_from_slice(&couple.cigar.qb2()?);
-        }
-        Ok(out)
-    }
-
+impl NonTransReceiptCouples {
     pub(crate) fn from_stream_bytes<'a>(
         bytes: &'a [u8],
         counter: &Counter,
@@ -82,6 +54,29 @@ pub struct NonTransReceiptCouple {
 impl NonTransReceiptCouple {
     pub fn new(verfer: Matter, cigar: Matter) -> Self {
         Self { verfer, cigar }
+    }
+}
+
+impl GroupItem for NonTransReceiptCouple {
+    fn qb64(&self) -> ParsideResult<String> {
+        let mut out = String::new();
+        out.push_str(&self.verfer.qb64()?);
+        out.push_str(&self.cigar.qb64()?);
+        Ok(out)
+    }
+
+    fn qb64b(&self) -> ParsideResult<Vec<u8>> {
+        let mut out = Vec::new();
+        out.extend_from_slice(&self.verfer.qb64b()?);
+        out.extend_from_slice(&self.cigar.qb64b()?);
+        Ok(out)
+    }
+
+    fn qb2(&self) -> ParsideResult<Vec<u8>> {
+        let mut out = Vec::new();
+        out.extend_from_slice(&self.verfer.qb2()?);
+        out.extend_from_slice(&self.cigar.qb2()?);
+        Ok(out)
     }
 }
 

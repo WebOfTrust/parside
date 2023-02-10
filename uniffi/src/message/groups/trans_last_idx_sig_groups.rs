@@ -1,9 +1,8 @@
 use parside::error::ParsideResult;
-pub use parside::Matter;
+use parside::{Matter, Group};
 pub use parside::message::groups::{
     TransLastIdxSigGroups,
     TransLastIdxSigGroup,
-    SealSourceCouple,
     ControllerIdxSigs
 };
 
