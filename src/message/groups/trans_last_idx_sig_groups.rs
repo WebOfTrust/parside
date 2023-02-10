@@ -61,7 +61,7 @@ impl TransLastIdxSigGroups {
     ) -> ParsideResult<(&'a [u8], TransLastIdxSigGroups)> {
         let (rest, body) = count(
             tuple((
-                Parsers::matter_parser(cold_code)?,
+                Parsers::prefixer_parser(cold_code)?,
                 Parsers::matter_list_parser(cold_code)?,
             )),
             counter.count() as usize,

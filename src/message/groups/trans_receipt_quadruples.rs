@@ -66,10 +66,10 @@ impl TransReceiptQuadruples {
     ) -> ParsideResult<(&'a [u8], TransReceiptQuadruples)> {
         let (rest, body) = count(
             tuple((
-                Parsers::matter_parser(cold_code)?,
-                Parsers::matter_parser(cold_code)?,
-                Parsers::matter_parser(cold_code)?,
-                Parsers::matter_parser(cold_code)?,
+                Parsers::prefixer_parser(cold_code)?,
+                Parsers::seqner_parser(cold_code)?,
+                Parsers::saider_parser(cold_code)?,
+                Parsers::siger_parser(cold_code)?,
             )),
             counter.count() as usize,
         )(bytes)?;

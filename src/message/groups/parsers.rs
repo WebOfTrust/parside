@@ -78,6 +78,96 @@ impl Parsers {
         matter_wrapper!(<Matter as Verfer>::new_with_qb2, bytes)
     }
 
+    pub(crate) fn siger_parser<'a>(
+        cold_code: &ColdCode,
+    ) -> ParsideResult<fn(&'a [u8]) -> nom::IResult<&'a [u8], Matter>> {
+        match cold_code {
+            ColdCode::CtB64 | ColdCode::OpB64 => Ok(nomify!(Self::siger_from_qb64b)),
+            ColdCode::CtOpB2 => Ok(nomify!(Self::siger_from_qb2)),
+            _ => Err(ParsideError::Unexpected("Unexpected cold code".to_string())),
+        }
+    }
+
+    fn siger_from_qb64b(bytes: &[u8]) -> ParsideResult<(&[u8], Matter)> {
+        matter_wrapper!(<Matter as Verfer>::new_with_qb64b, bytes) // FIXME: Siger instead Matter
+    }
+
+    fn siger_from_qb2(bytes: &[u8]) -> ParsideResult<(&[u8], Matter)> {
+        matter_wrapper!(<Matter as Verfer>::new_with_qb2, bytes) // FIXME: Siger instead Matter
+    }
+
+    pub(crate) fn cigar_parser<'a>(
+        cold_code: &ColdCode,
+    ) -> ParsideResult<fn(&'a [u8]) -> nom::IResult<&'a [u8], Matter>> {
+        match cold_code {
+            ColdCode::CtB64 | ColdCode::OpB64 => Ok(nomify!(Self::cigar_from_qb64b)),
+            ColdCode::CtOpB2 => Ok(nomify!(Self::cigar_from_qb2)),
+            _ => Err(ParsideError::Unexpected("Unexpected cold code".to_string())),
+        }
+    }
+
+    fn cigar_from_qb64b(bytes: &[u8]) -> ParsideResult<(&[u8], Matter)> {
+        matter_wrapper!(Matter::new_with_qb64b, bytes) // FIXME: Cigar instead Matter
+    }
+
+    fn cigar_from_qb2(bytes: &[u8]) -> ParsideResult<(&[u8], Matter)> {
+        matter_wrapper!(Matter::new_with_qb2, bytes) // FIXME: Cigar instead Matter
+    }
+
+    pub(crate) fn prefixer_parser<'a>(
+        cold_code: &ColdCode,
+    ) -> ParsideResult<fn(&'a [u8]) -> nom::IResult<&'a [u8], Matter>> {
+        match cold_code {
+            ColdCode::CtB64 | ColdCode::OpB64 => Ok(nomify!(Self::prefixer_from_qb64b)),
+            ColdCode::CtOpB2 => Ok(nomify!(Self::prefixer_from_qb2)),
+            _ => Err(ParsideError::Unexpected("Unexpected cold code".to_string())),
+        }
+    }
+
+    fn prefixer_from_qb64b(bytes: &[u8]) -> ParsideResult<(&[u8], Matter)> {
+        matter_wrapper!(Matter::new_with_qb64b, bytes) // FIXME: Prefixer instead Matter
+    }
+
+    fn prefixer_from_qb2(bytes: &[u8]) -> ParsideResult<(&[u8], Matter)> {
+        matter_wrapper!(Matter::new_with_qb2, bytes) // FIXME: Prefixer instead Matter
+    }
+
+    pub(crate) fn seqner_parser<'a>(
+        cold_code: &ColdCode,
+    ) -> ParsideResult<fn(&'a [u8]) -> nom::IResult<&'a [u8], Matter>> {
+        match cold_code {
+            ColdCode::CtB64 | ColdCode::OpB64 => Ok(nomify!(Self::seqner_from_qb64b)),
+            ColdCode::CtOpB2 => Ok(nomify!(Self::seqner_from_qb2)),
+            _ => Err(ParsideError::Unexpected("Unexpected cold code".to_string())),
+        }
+    }
+
+    fn seqner_from_qb64b(bytes: &[u8]) -> ParsideResult<(&[u8], Matter)> {
+        matter_wrapper!(Matter::new_with_qb64b, bytes) // FIXME: Seqner instead Matter
+    }
+
+    fn seqner_from_qb2(bytes: &[u8]) -> ParsideResult<(&[u8], Matter)> {
+        matter_wrapper!(Matter::new_with_qb2, bytes) // FIXME: Seqner instead Matter
+    }
+
+    pub(crate) fn saider_parser<'a>(
+        cold_code: &ColdCode,
+    ) -> ParsideResult<fn(&'a [u8]) -> nom::IResult<&'a [u8], Matter>> {
+        match cold_code {
+            ColdCode::CtB64 | ColdCode::OpB64 => Ok(nomify!(Self::saider_from_qb64b)),
+            ColdCode::CtOpB2 => Ok(nomify!(Self::saider_from_qb2)),
+            _ => Err(ParsideError::Unexpected("Unexpected cold code".to_string())),
+        }
+    }
+
+    fn saider_from_qb64b(bytes: &[u8]) -> ParsideResult<(&[u8], Matter)> {
+        matter_wrapper!(Matter::new_with_qb64b, bytes) // FIXME: Saider instead Matter
+    }
+
+    fn saider_from_qb2(bytes: &[u8]) -> ParsideResult<(&[u8], Matter)> {
+        matter_wrapper!(Matter::new_with_qb2, bytes) // FIXME: Saider instead Matter
+    }
+
     pub(crate) fn counter_parser<'a>(
         cold_code: &ColdCode,
     ) -> ParsideResult<fn(&'a [u8]) -> nom::IResult<&'a [u8], Counter>> {

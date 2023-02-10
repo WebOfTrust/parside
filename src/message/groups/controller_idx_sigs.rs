@@ -55,7 +55,7 @@ impl ControllerIdxSigs {
         cold_code: &ColdCode,
     ) -> ParsideResult<(&'a [u8], ControllerIdxSigs)> {
         let (rest, body) =
-            count(Parsers::matter_parser(cold_code)?, counter.count() as usize)(bytes)?;
+            count(Parsers::siger_parser(cold_code)?, counter.count() as usize)(bytes)?;
         return Ok((rest, ControllerIdxSigs { value: body }));
     }
 }

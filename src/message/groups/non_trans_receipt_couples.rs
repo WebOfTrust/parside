@@ -61,7 +61,7 @@ impl NonTransReceiptCouples {
         let (rest, body) = count(
             tuple((
                 Parsers::verfer_parser(cold_code)?,
-                Parsers::matter_parser(cold_code)?,
+                Parsers::cigar_parser(cold_code)?,
             )),
             counter.count() as usize,
         )(bytes)?;
