@@ -1,8 +1,13 @@
 use parside::error::ParsideResult;
-use parside::{Matter, Group};
-pub use parside::message::groups::ControllerIdxSigs;
+pub use parside::message::groups::{ControllerIdxSig, ControllerIdxSigs};
+use parside::Group;
+use parside::Siger;
 
-pub fn controller_idx_sigs_create(value: Vec<Matter>) -> ControllerIdxSigs {
+pub fn controller_idx_sig_create(siger: Siger) -> ControllerIdxSig {
+    ControllerIdxSig::new(siger)
+}
+
+pub fn controller_idx_sigs_create(value: Vec<ControllerIdxSig>) -> ControllerIdxSigs {
     ControllerIdxSigs::new(value)
 }
 
@@ -10,7 +15,9 @@ pub fn controller_idx_sigs_qb64(controller_idx_sigs: &ControllerIdxSigs) -> Pars
     controller_idx_sigs.qb64()
 }
 
-pub fn controller_idx_sigs_qb64b(controller_idx_sigs: &ControllerIdxSigs) -> ParsideResult<Vec<u8>> {
+pub fn controller_idx_sigs_qb64b(
+    controller_idx_sigs: &ControllerIdxSigs,
+) -> ParsideResult<Vec<u8>> {
     controller_idx_sigs.qb64b()
 }
 

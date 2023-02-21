@@ -1,10 +1,11 @@
-use crate::error::ParsideResult;
+use crate::error::{ParsideError, ParsideResult};
 use crate::message::cold_code::ColdCode;
-use crate::message::groups::parsers::Parsers;
+use crate::message::parsers::Parsers;
 use cesride::counter::Codex;
-use cesride::{Counter, Matter};
+use cesride::{Counter, Matter, Prefixer, Saider, Seqner};
 use nom::multi::count;
 use nom::sequence::tuple;
+use crate::message::controller_idx_sigs::ControllerIdxSig;
 use crate::message::Group;
 use crate::message::groups::controller_idx_sigs::ControllerIdxSigs;
 
@@ -14,14 +15,15 @@ pub struct TransIdxSigGroups {
 }
 
 impl TransIdxSigGroups {
-    pub const CODE: Codex = Codex::TransIdxSigGroups;
+    pub const CODE: &'static str = Codex::TransIdxSigGroups;
 
     pub fn new(value: Vec<TransIdxSigGroup>) -> Self {
         Self { value }
     }
 
-    pub fn counter(&self) -> Counter {
-        Counter::new(&Self::CODE.code(), self.count())
+    pub fn counter(&self) -> ParsideResult<Counter> {
+        Counter::new_with_code_and_count(&Self::CODE, self.count())
+            .map_err(ParsideError::from)
     }
 
     pub fn count(&self) -> u32 {
@@ -29,7 +31,7 @@ impl TransIdxSigGroups {
     }
 
     pub fn qb64(&self) -> ParsideResult<String> {
-        let mut out = self.counter().qb64()?;
+        let mut out = self.counter()?.qb64()?;
         for couple in self.value.iter() {
             out.push_str(&couple.prefixer.qb64()?);
             out.push_str(&couple.seqner.qb64()?);
@@ -40,7 +42,7 @@ impl TransIdxSigGroups {
     }
 
     pub fn qb64b(&self) -> ParsideResult<Vec<u8>> {
-        let mut out = self.counter().qb64b()?;
+        let mut out = self.counter()?.qb64b()?;
         for couple in self.value.iter() {
             out.extend_from_slice(&couple.seqner.qb64b()?);
             out.extend_from_slice(&couple.seqner.qb64b()?);
@@ -51,7 +53,7 @@ impl TransIdxSigGroups {
     }
 
     pub fn qb2(&self) -> ParsideResult<Vec<u8>> {
-        let mut out = self.counter().qb2()?;
+        let mut out = self.counter()?.qb2()?;
         for couple in self.value.iter() {
             out.extend_from_slice(&couple.seqner.qb2()?);
             out.extend_from_slice(&couple.seqner.qb2()?);
@@ -71,7 +73,7 @@ impl TransIdxSigGroups {
                 Parsers::prefixer_parser(cold_code)?,
                 Parsers::seqner_parser(cold_code)?,
                 Parsers::saider_parser(cold_code)?,
-                Parsers::matter_list_parser(cold_code)?,
+                Parsers::siger_list_parser(cold_code)?,
             )),
             counter.count() as usize,
         )(bytes)?;
@@ -82,7 +84,9 @@ impl TransIdxSigGroups {
                 prefixer,
                 seqner,
                 saider,
-                isigers: ControllerIdxSigs::new(isigers),
+                isigers: ControllerIdxSigs::new(
+                    isigers.into_iter().map(|siger| ControllerIdxSig::new(siger)).collect()
+                ),
             })
             .collect();
 
@@ -92,14 +96,14 @@ impl TransIdxSigGroups {
 
 #[derive(Debug, Clone, Default)]
 pub struct TransIdxSigGroup {
-    pub prefixer: Matter,
-    pub seqner: Matter,
-    pub saider: Matter,
+    pub prefixer: Prefixer,
+    pub seqner: Seqner,
+    pub saider: Saider,
     pub isigers: ControllerIdxSigs,
 }
 
 impl TransIdxSigGroup {
-    pub fn new(prefixer: Matter, seqner: Matter, saider: Matter, isigers: ControllerIdxSigs) -> Self {
+    pub fn new(prefixer: Prefixer, seqner: Seqner, saider: Saider, isigers: ControllerIdxSigs) -> Self {
         Self { prefixer, seqner, saider, isigers }
     }
 }
@@ -113,22 +117,22 @@ pub mod tests {
     pub fn test_parse_trans_idx_sig_groups() {
         let stream = br#"EFhg5my9DuMU6gw1CVk6QgkmZKBttWSXDzVzWVmxh0_K0AAAAAAAAAAAAAAAAAAAAAAAEFhg5my9DuMU6gw1CVk6QgkmZKBttWSXDzVzWVmxh0_K-AABAADghKct9eYTuSgSd5wdPSYG06tGX7ZRp_BDnrgbSxJpsJtrA-fP7Pa1W602gHeMrO6HZsD1z3tWV5jGlApFmVIB"#;
 
-        let counter = Counter::new(TransIdxSigGroups::CODE.code(), 1);
+        let counter = Counter::new_with_code_and_count(TransIdxSigGroups::CODE, 1).unwrap();
 
         let (rest, group) =
             TransIdxSigGroups::from_stream_bytes(stream, &counter, &ColdCode::CtB64).unwrap();
         assert!(rest.is_empty());
         assert_eq!(1, group.value.len());
         assert_eq!(
-            MatterCodex::Blake3_256.code().to_string(),
+            MatterCodex::Blake3_256.to_string(),
             group.value[0].prefixer.code()
         );
         assert_eq!(
-            MatterCodex::Salt_128.code().to_string(),
+            MatterCodex::Salt_128.to_string(),
             group.value[0].seqner.code()
         );
         assert_eq!(
-            MatterCodex::Blake3_256.code().to_string(),
+            MatterCodex::Blake3_256.to_string(),
             group.value[0].saider.code()
         );
     }

@@ -1,16 +1,16 @@
 use crate::error::{ParsideError, ParsideResult};
-use cesride::{Counter, Matter};
-use cesride::counter::Codex;
+use cesride::Counter;
 
 pub trait Group<T: GroupItem> {
-    const CODE: Codex;
+    const CODE: &'static str;
 
     fn new(value: Vec<T>) -> Self;
 
     fn value(&self) -> &Vec<T>;
 
-    fn counter(&self) -> Counter {
-        Counter::new(&Self::CODE.code(), self.count())
+    fn counter(&self) -> ParsideResult<Counter> {
+        Counter::new_with_code_and_count(&Self::CODE, self.count())
+            .map_err(ParsideError::from)
     }
 
     fn count(&self) -> u32 {
@@ -18,7 +18,7 @@ pub trait Group<T: GroupItem> {
     }
 
     fn qb64(&self) -> ParsideResult<String> {
-        let mut out = self.counter().qb64()?;
+        let mut out = self.counter()?.qb64()?;
         for value in self.value().iter() {
             out.push_str(&value.qb64()?);
         }
@@ -26,7 +26,7 @@ pub trait Group<T: GroupItem> {
     }
 
     fn qb64b(&self) -> ParsideResult<Vec<u8>> {
-        let mut out = self.counter().qb64b()?;
+        let mut out = self.counter()?.qb64b()?;
         for value in self.value().iter() {
             out.extend_from_slice(&value.qb64b()?);
         }
@@ -34,7 +34,7 @@ pub trait Group<T: GroupItem> {
     }
 
     fn qb2(&self) -> ParsideResult<Vec<u8>> {
-        let mut out = self.counter().qb2()?;
+        let mut out = self.counter()?.qb2()?;
         for value in self.value().iter() {
             out.extend_from_slice(&value.qb2()?);
         }
@@ -46,18 +46,4 @@ pub trait GroupItem {
     fn qb64(&self) -> ParsideResult<String>;
     fn qb64b(&self) -> ParsideResult<Vec<u8>>;
     fn qb2(&self) -> ParsideResult<Vec<u8>>;
-}
-
-impl GroupItem for Matter {
-    fn qb64(&self) -> ParsideResult<String> {
-        self.qb64().map_err(ParsideError::from)
-    }
-
-    fn qb64b(&self) -> ParsideResult<Vec<u8>> {
-        self.qb64b().map_err(ParsideError::from)
-    }
-
-    fn qb2(&self) -> ParsideResult<Vec<u8>> {
-        self.qb2().map_err(ParsideError::from)
-    }
 }

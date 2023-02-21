@@ -1,11 +1,9 @@
 use parside::error::ParsideResult;
-use parside::{Matter, Group};
-pub use parside::message::groups::{
-    SealSourceCouples,
-    SealSourceCouple,
-};
+pub use parside::message::groups::{SealSourceCouple, SealSourceCouples};
+use parside::Group;
+use parside::{Saider, Seqner};
 
-pub fn seal_source_couple_create(seqner: Matter, saider: Matter) -> SealSourceCouple {
+pub fn seal_source_couple_create(seqner: Seqner, saider: Saider) -> SealSourceCouple {
     SealSourceCouple::new(seqner, saider)
 }
 
@@ -17,7 +15,9 @@ pub fn seal_source_couples_qb64(seal_source_couples: &SealSourceCouples) -> Pars
     seal_source_couples.qb64()
 }
 
-pub fn seal_source_couples_qb64b(seal_source_couples: &SealSourceCouples) -> ParsideResult<Vec<u8>> {
+pub fn seal_source_couples_qb64b(
+    seal_source_couples: &SealSourceCouples,
+) -> ParsideResult<Vec<u8>> {
     seal_source_couples.qb64b()
 }
 

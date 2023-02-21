@@ -1,8 +1,8 @@
 use crate::error::ParsideResult;
 use crate::message::cold_code::ColdCode;
-use crate::message::groups::parsers::Parsers;
+use crate::message::parsers::Parsers;
 use cesride::counter::Codex;
-use cesride::{Counter, Matter};
+use cesride::{Counter, Indexer, Matter, Prefixer, Saider, Seqner, Siger};
 use nom::multi::count;
 use nom::sequence::tuple;
 use crate::message::{Group, GroupItem};
@@ -13,7 +13,7 @@ pub struct TransReceiptQuadruples {
 }
 
 impl Group<TransReceiptQuadruple> for TransReceiptQuadruples {
-    const CODE: Codex = Codex::TransReceiptQuadruples;
+    const CODE: &'static str = Codex::TransReceiptQuadruples;
 
     fn new(value: Vec<TransReceiptQuadruple>) -> Self {
         Self { value }
@@ -55,14 +55,14 @@ impl TransReceiptQuadruples {
 
 #[derive(Debug, Clone, Default)]
 pub struct TransReceiptQuadruple {
-    pub prefixer: Matter,
-    pub seqner: Matter,
-    pub saider: Matter,
-    pub siger: Matter,
+    pub prefixer: Prefixer,
+    pub seqner: Seqner,
+    pub saider: Saider,
+    pub siger: Siger,
 }
 
 impl TransReceiptQuadruple {
-    pub fn new(prefixer: Matter, seqner: Matter, saider: Matter, siger: Matter) -> Self {
+    pub fn new(prefixer: Prefixer, seqner: Seqner, saider: Saider, siger: Siger) -> Self {
         Self {
             prefixer,
             seqner,

@@ -1,7 +1,7 @@
 use crate::error::ParsideResult;
 use crate::message::cold_code::ColdCode;
-use crate::message::groups::parsers::Parsers;
-use cesride::{Counter, Matter};
+use crate::message::parsers::Parsers;
+use cesride::{Counter, Dater, Matter, Seqner};
 use cesride::counter::Codex as CounterCodex;
 use nom::multi::count;
 use nom::sequence::tuple;
@@ -13,7 +13,7 @@ pub struct FirstSeenReplayCouples {
 }
 
 impl Group<FirstSeenReplayCouple> for FirstSeenReplayCouples {
-    const CODE: CounterCodex = CounterCodex::FirstSeenReplayCouples;
+    const CODE: &'static str = CounterCodex::FirstSeenReplayCouples;
 
     fn new(value: Vec<FirstSeenReplayCouple>) -> Self {
         Self { value }
@@ -32,8 +32,8 @@ impl FirstSeenReplayCouples {
     ) -> ParsideResult<(&'a [u8], FirstSeenReplayCouples)> {
         let (rest, body) = count(
             tuple((
-                Parsers::matter_parser(cold_code)?,
-                Parsers::matter_parser(cold_code)?,
+                Parsers::seqner_parser(cold_code)?,
+                Parsers::dater_parser(cold_code)?,
             )),
             counter.count() as usize,
         )(bytes)?;
@@ -48,12 +48,12 @@ impl FirstSeenReplayCouples {
 
 #[derive(Debug, Clone, Default)]
 pub struct FirstSeenReplayCouple {
-    pub firner: Matter,
-    pub dater: Matter,
+    pub firner: Seqner,
+    pub dater: Dater,
 }
 
 impl FirstSeenReplayCouple {
-    pub fn new(firner: Matter, dater: Matter) -> Self {
+    pub fn new(firner: Seqner, dater: Dater) -> Self {
         Self { firner, dater }
     }
 }

@@ -3,6 +3,7 @@ pub mod groups;
 pub mod message;
 pub mod message_list;
 pub mod cold_code;
+mod parsers;
 
 pub use custom_payload::CustomPayload;
 pub use groups::*;

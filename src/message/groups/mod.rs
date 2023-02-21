@@ -11,28 +11,26 @@ pub mod witness_idx_sigs;
 pub mod sad_path_sig_group;
 pub mod sad_path_sig;
 pub mod pathed_material_quadlets;
-mod parsers;
 
 use crate::error::{ParsideError, ParsideResult};
 use crate::message::cold_code::ColdCode;
-use parsers::Parsers;
-use cesride::counter::Codex;
+use crate::message::parsers::Parsers;
 
-pub use self::group::{GroupItem, Group};
-pub use self::attached_material_quadlets::AttachedMaterialQuadlets;
-pub use self::controller_idx_sigs::ControllerIdxSigs;
-pub use self::first_seen_replay_couples::{FirstSeenReplayCouples, FirstSeenReplayCouple};
-pub use self::non_trans_receipt_couples::{NonTransReceiptCouples, NonTransReceiptCouple};
-pub use self::seal_source_couples::{SealSourceCouples, SealSourceCouple};
-pub use self::trans_idx_sig_groups::{TransIdxSigGroups, TransIdxSigGroup};
-pub use self::trans_last_idx_sig_groups::{TransLastIdxSigGroups, TransLastIdxSigGroup};
-pub use self::trans_receipt_quadruples::{TransReceiptQuadruples, TransReceiptQuadruple};
-pub use self::witness_idx_sigs::WitnessIdxSigs;
-pub use self::sad_path_sig_group::SadPathSigGroup;
-pub use self::sad_path_sig::SadPathSig;
-pub use self::pathed_material_quadlets::PathedMaterialQuadlets;
+pub use self::group::{Group, GroupItem};
+pub use self::attached_material_quadlets::{AttachedMaterialQuadlets};
+pub use self::controller_idx_sigs::{ControllerIdxSig, ControllerIdxSigs};
+pub use self::first_seen_replay_couples::{FirstSeenReplayCouple, FirstSeenReplayCouples};
+pub use self::non_trans_receipt_couples::{NonTransReceiptCouple, NonTransReceiptCouples};
+pub use self::seal_source_couples::{SealSourceCouple, SealSourceCouples};
+pub use self::trans_idx_sig_groups::{TransIdxSigGroup, TransIdxSigGroups};
+pub use self::trans_last_idx_sig_groups::{TransLastIdxSigGroup, TransLastIdxSigGroups};
+pub use self::trans_receipt_quadruples::{TransReceiptQuadruple, TransReceiptQuadruples};
+pub use self::witness_idx_sigs::{WitnessIdxSig, WitnessIdxSigs};
+pub use self::sad_path_sig_group::{SadPathSigGroup, SadPathSigGroups};
+pub use self::sad_path_sig::{SadPathSig, SadPathSigs};
+pub use self::pathed_material_quadlets::{PathedMaterialQuadlet, PathedMaterialQuadlets};
 
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub enum CesrGroup {
     ControllerIdxSigsVariant { value: ControllerIdxSigs },
     WitnessIdxSigsVariant { value: WitnessIdxSigs },
@@ -43,8 +41,8 @@ pub enum CesrGroup {
     FirstSeenReplayCouplesVariant { value: FirstSeenReplayCouples },
     SealSourceCouplesVariant { value: SealSourceCouples },
     AttachedMaterialQuadletsVariant { value: AttachedMaterialQuadlets },
-    SadPathSigGroupVariant { value: SadPathSigGroup },
-    SadPathSigVariant { value: SadPathSig },
+    SadPathSigGroupVariant { value: SadPathSigGroups },
+    SadPathSigVariant { value: SadPathSigs },
     PathedMaterialQuadletsVariant { value: PathedMaterialQuadlets },
 }
 
@@ -52,9 +50,9 @@ impl CesrGroup {
     pub fn from_stream_bytes(bytes: &[u8]) -> ParsideResult<(&[u8], CesrGroup)> {
         let cold_code = ColdCode::try_from(bytes[0])?;
         let (rest, counter) = Parsers::counter_parser(&cold_code)?(bytes)?;
-        let code = Codex::from_code(&counter.code())?;
+        let code = counter.code();
 
-        match code {
+        match code.as_str() {
             AttachedMaterialQuadlets::CODE => {
                 let (rest, group) =
                     AttachedMaterialQuadlets::from_stream_bytes(rest, &counter, &cold_code)?;
@@ -100,14 +98,14 @@ impl CesrGroup {
                     SealSourceCouples::from_stream_bytes(rest, &counter, &cold_code)?;
                 Ok((rest, CesrGroup::SealSourceCouplesVariant { value: group }))
             }
-            SadPathSigGroup::CODE => {
+            SadPathSigGroups::CODE => {
                 let (rest, group) =
-                    SadPathSigGroup::from_stream_bytes(rest, &counter, &cold_code)?;
+                    SadPathSigGroups::from_stream_bytes(rest, &counter, &cold_code)?;
                 Ok((rest, CesrGroup::SadPathSigGroupVariant { value: group }))
             }
-            SadPathSig::CODE => {
+            SadPathSigs::CODE => {
                 let (rest, group) =
-                    SadPathSig::from_stream_bytes(rest, &counter, &cold_code)?;
+                    SadPathSigs::from_stream_bytes(rest, &counter, &cold_code)?;
                 Ok((rest, CesrGroup::SadPathSigVariant { value: group }))
             }
             PathedMaterialQuadlets::CODE => {
@@ -124,6 +122,7 @@ impl CesrGroup {
 
 #[cfg(test)]
 pub mod tests {
+    use cesride::{Indexer, Matter};
     use super::*;
     pub use cesride::matter::Codex as MatterCodex;
 
@@ -137,15 +136,15 @@ pub mod tests {
             CesrGroup::TransIdxSigGroupsVariant { value: group } => {
                 assert_eq!(1, group.value.len());
                 assert_eq!(
-                    MatterCodex::Blake3_256.code().to_string(),
+                    MatterCodex::Blake3_256.to_string(),
                     group.value[0].prefixer.code()
                 );
                 assert_eq!(
-                    MatterCodex::Salt_128.code().to_string(),
+                    MatterCodex::Salt_128.to_string(),
                     group.value[0].seqner.code()
                 );
                 assert_eq!(
-                    MatterCodex::Blake3_256.code().to_string(),
+                    MatterCodex::Blake3_256.to_string(),
                     group.value[0].saider.code()
                 );
             }
@@ -157,14 +156,15 @@ pub mod tests {
     pub fn test_parse_controller_idx_sigs() {
         let stream = br#"-AABAABg3q8uNg1A2jhEAdbKGf-QupQhNnmZQx3zIyPLWBe6qqLT5ynytivf9EwJhxyhy87a0x2cezDdil4SsM2xxs0O"#;
 
-        let (_rest, group) = CesrGroup::from_stream_bytes(stream).unwrap();
+        let (rest, group) = CesrGroup::from_stream_bytes(stream).unwrap();
 
+        assert!(rest.is_empty());
         match group {
             CesrGroup::ControllerIdxSigsVariant { value: group } => {
                 assert_eq!(1, group.value.len());
                 assert_eq!(
-                    MatterCodex::Ed25519_Seed.code().to_string(),
-                    group.value[0].code()
+                    MatterCodex::Ed25519_Seed.to_string(),
+                    group.value[0].siger.code()
                 );
             }
             _ => assert!(false, "Unexpected case"),
@@ -181,11 +181,7 @@ pub mod tests {
             CesrGroup::NonTransReceiptCouplesVariant { value: group } => {
                 assert_eq!(1, group.value.len());
                 assert_eq!(
-                    MatterCodex::Ed25519N.code().to_string(),
-                    group.value[0].verfer.code()
-                );
-                assert_eq!(
-                    MatterCodex::Ed25519_Sig.code().to_string(),
+                    MatterCodex::Ed25519_Sig.to_string(),
                     group.value[0].cigar.code()
                 );
             }
@@ -210,7 +206,7 @@ pub mod tests {
             CesrGroup::TransLastIdxSigGroupsVariant { value: group } => {
                 assert_eq!(1, group.value.len());
                 assert_eq!(
-                    MatterCodex::Blake3_256.code().to_string(),
+                    MatterCodex::Blake3_256.to_string(),
                     group.value[0].prefixer.code()
                 );
             }

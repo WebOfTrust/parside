@@ -1,23 +1,23 @@
-use crate::error::ParsideResult;
+use crate::error::{ParsideError, ParsideResult};
 use crate::message::cold_code::ColdCode;
 use cesride::counter::Codex;
-use cesride::{Counter, Matter};
-use crate::message::Group;
+use cesride::{Counter, Indexer, Siger};
+use crate::message::{Group, GroupItem};
 
 // FIXME: Implement proper definition
 #[derive(Debug, Clone, Default)]
 pub struct PathedMaterialQuadlets {
-    pub value: Vec<Matter>,
+    pub value: Vec<PathedMaterialQuadlet>,
 }
 
-impl Group<Matter> for PathedMaterialQuadlets {
-    const CODE: Codex = Codex::PathedMaterialQuadlets;
+impl Group<PathedMaterialQuadlet> for PathedMaterialQuadlets {
+    const CODE: &'static str = Codex::PathedMaterialQuadlets;
 
-    fn new(value: Vec<Matter>) -> Self {
+    fn new(value: Vec<PathedMaterialQuadlet>) -> Self {
         Self { value }
     }
 
-    fn value(&self) -> &Vec<Matter> {
+    fn value(&self) -> &Vec<PathedMaterialQuadlet> {
         &self.value
     }
 }
@@ -29,5 +29,31 @@ impl PathedMaterialQuadlets {
         _cold_code: &ColdCode,
     ) -> ParsideResult<(&'a [u8], PathedMaterialQuadlets)> {
         unimplemented!();
+    }
+}
+
+#[derive(Debug, Clone, Default)]
+pub struct PathedMaterialQuadlet {
+    pub siger: Siger
+}
+
+impl PathedMaterialQuadlet {
+    pub fn new(siger: Siger) -> Self {
+        Self { siger }
+    }
+}
+
+
+impl GroupItem for PathedMaterialQuadlet {
+    fn qb64(&self) -> ParsideResult<String> {
+        self.siger.qb64().map_err(ParsideError::from)
+    }
+
+    fn qb64b(&self) -> ParsideResult<Vec<u8>> {
+        self.siger.qb64b().map_err(ParsideError::from)
+    }
+
+    fn qb2(&self) -> ParsideResult<Vec<u8>> {
+        self.siger.qb2().map_err(ParsideError::from)
     }
 }

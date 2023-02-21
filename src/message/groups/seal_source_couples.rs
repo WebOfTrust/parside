@@ -1,8 +1,8 @@
 use crate::error::ParsideResult;
 use crate::message::cold_code::ColdCode;
-use crate::message::groups::parsers::Parsers;
+use crate::message::parsers::Parsers;
 use cesride::counter::Codex;
-use cesride::{Counter, Matter};
+use cesride::{Counter, Matter, Saider, Seqner};
 use nom::multi::count;
 use nom::sequence::tuple;
 use crate::message::{Group, GroupItem};
@@ -13,7 +13,7 @@ pub struct SealSourceCouples {
 }
 
 impl Group<SealSourceCouple> for SealSourceCouples {
-    const CODE: Codex = Codex::SealSourceCouples;
+    const CODE: &'static str = Codex::SealSourceCouples;
 
     fn new(value: Vec<SealSourceCouple>) -> Self {
         Self { value }
@@ -48,12 +48,12 @@ impl SealSourceCouples {
 
 #[derive(Debug, Clone, Default)]
 pub struct SealSourceCouple {
-    pub seqner: Matter,
-    pub saider: Matter,
+    pub seqner: Seqner,
+    pub saider: Saider,
 }
 
 impl SealSourceCouple {
-    pub fn new(seqner: Matter, saider: Matter) -> Self {
+    pub fn new(seqner: Seqner, saider: Saider) -> Self {
         Self { seqner, saider }
     }
 }

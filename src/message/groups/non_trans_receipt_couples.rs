@@ -1,10 +1,9 @@
-use crate::error::ParsideResult;
+use crate::error::{ParsideError, ParsideResult};
 use crate::message::cold_code::ColdCode;
-use crate::message::groups::parsers::Parsers;
+use crate::message::parsers::Parsers;
 use cesride::counter::Codex;
-use cesride::{Counter, Matter};
+use cesride::{Cigar, Counter, Matter};
 use nom::multi::count;
-use nom::sequence::tuple;
 use crate::message::{Group, GroupItem};
 
 #[derive(Debug, Clone, Default)]
@@ -13,7 +12,7 @@ pub struct NonTransReceiptCouples {
 }
 
 impl Group<NonTransReceiptCouple> for NonTransReceiptCouples {
-    const CODE: Codex = Codex::NonTransReceiptCouples;
+    const CODE: &'static str = Codex::NonTransReceiptCouples;
 
     fn new(value: Vec<NonTransReceiptCouple>) -> Self {
         Self { value }
@@ -31,15 +30,12 @@ impl NonTransReceiptCouples {
         cold_code: &ColdCode,
     ) -> ParsideResult<(&'a [u8], NonTransReceiptCouples)> {
         let (rest, body) = count(
-            tuple((
-                Parsers::verfer_parser(cold_code)?,
-                Parsers::cigar_parser(cold_code)?,
-            )),
+            Parsers::cigar_parser(cold_code)?,
             counter.count() as usize,
         )(bytes)?;
         let body = body
             .into_iter()
-            .map(|(verfer, cigar)| NonTransReceiptCouple { verfer, cigar })
+            .map(|cigar| NonTransReceiptCouple { cigar })
             .collect();
         return Ok((rest, NonTransReceiptCouples { value: body }));
     }
@@ -47,36 +43,27 @@ impl NonTransReceiptCouples {
 
 #[derive(Debug, Clone, Default)]
 pub struct NonTransReceiptCouple {
-    pub verfer: Matter,
-    pub cigar: Matter,
+    pub cigar: Cigar
 }
 
 impl NonTransReceiptCouple {
-    pub fn new(verfer: Matter, cigar: Matter) -> Self {
-        Self { verfer, cigar }
+    pub fn new(cigar: Cigar) -> Self {
+        Self { cigar }
     }
 }
 
+
 impl GroupItem for NonTransReceiptCouple {
     fn qb64(&self) -> ParsideResult<String> {
-        let mut out = String::new();
-        out.push_str(&self.verfer.qb64()?);
-        out.push_str(&self.cigar.qb64()?);
-        Ok(out)
+        self.cigar.qb64().map_err(ParsideError::from)
     }
 
     fn qb64b(&self) -> ParsideResult<Vec<u8>> {
-        let mut out = Vec::new();
-        out.extend_from_slice(&self.verfer.qb64b()?);
-        out.extend_from_slice(&self.cigar.qb64b()?);
-        Ok(out)
+        self.cigar.qb64b().map_err(ParsideError::from)
     }
 
     fn qb2(&self) -> ParsideResult<Vec<u8>> {
-        let mut out = Vec::new();
-        out.extend_from_slice(&self.verfer.qb2()?);
-        out.extend_from_slice(&self.cigar.qb2()?);
-        Ok(out)
+        self.cigar.qb2().map_err(ParsideError::from)
     }
 }
 
@@ -89,17 +76,13 @@ pub mod tests {
     pub fn test_parse_non_trans_receipt_couples() {
         let stream = br#"BD8-gMSJ6K1PQ7_gG5ZJn2NkHQJgdkiNrTBz_FWWS_cC0BDc1i44ZX0jaIHh5oNDx-TITbPnI6VEn2nKlqPwkkTF452X7XxYh80tolDpReYwZpnD8TF4Or2v3CpSCikyt6EG"#;
 
-        let counter = Counter::new(NonTransReceiptCouples::CODE.code(), 1);
+        let counter = Counter::new_with_code_and_count(NonTransReceiptCouples::CODE, 1).unwrap();
         let (rest, group) =
             NonTransReceiptCouples::from_stream_bytes(stream, &counter, &ColdCode::CtB64).unwrap();
         assert!(rest.is_empty());
         assert_eq!(1, group.value.len());
         assert_eq!(
-            MatterCodex::Ed25519N.code().to_string(),
-            group.value[0].verfer.code()
-        );
-        assert_eq!(
-            MatterCodex::Ed25519_Sig.code().to_string(),
+            MatterCodex::Ed25519_Sig.to_string(),
             group.value[0].cigar.code()
         );
     }

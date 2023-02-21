@@ -1,10 +1,13 @@
 use parside::error::ParsideResult;
-use parside::{Matter, Group};
-pub use parside::message::groups::{
-    WitnessIdxSigs,
-};
+pub use parside::message::groups::{WitnessIdxSig, WitnessIdxSigs};
+use parside::Group;
+use parside::Siger;
 
-pub fn witness_ids_sigs_create(value: Vec<Matter>) -> WitnessIdxSigs {
+pub fn witness_ids_sig_create(siger: Siger) -> WitnessIdxSig {
+    WitnessIdxSig::new(siger)
+}
+
+pub fn witness_ids_sigs_create(value: Vec<WitnessIdxSig>) -> WitnessIdxSigs {
     WitnessIdxSigs::new(value)
 }
 
