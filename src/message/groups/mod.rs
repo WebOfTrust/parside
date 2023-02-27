@@ -155,7 +155,6 @@ pub mod tests {
     #[test]
     pub fn test_parse_controller_idx_sigs() {
         let stream = br#"-AABAABg3q8uNg1A2jhEAdbKGf-QupQhNnmZQx3zIyPLWBe6qqLT5ynytivf9EwJhxyhy87a0x2cezDdil4SsM2xxs0O"#;
-
         let (rest, group) = CesrGroup::from_stream_bytes(stream).unwrap();
 
         assert!(rest.is_empty());

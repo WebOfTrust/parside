@@ -74,7 +74,7 @@ pub mod tests {
     pub fn test_parse_controller_idx_sigs() {
         let stream = br#"AABg3q8uNg1A2jhEAdbKGf-QupQhNnmZQx3zIyPLWBe6qqLT5ynytivf9EwJhxyhy87a0x2cezDdil4SsM2xxs0O"#;
 
-        let counter = Counter::new_with_code_and_count(ControllerIdxSigs::CODE, 1).unwrap();
+        let counter = Counter::new(Some(1), None, Some(ControllerIdxSigs::CODE), None, None, None).unwrap();
         let (rest, group) =
             ControllerIdxSigs::from_stream_bytes(stream, &counter, &ColdCode::CtB64).unwrap();
 

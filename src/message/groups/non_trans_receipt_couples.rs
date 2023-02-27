@@ -76,7 +76,7 @@ pub mod tests {
     pub fn test_parse_non_trans_receipt_couples() {
         let stream = br#"BD8-gMSJ6K1PQ7_gG5ZJn2NkHQJgdkiNrTBz_FWWS_cC0BDc1i44ZX0jaIHh5oNDx-TITbPnI6VEn2nKlqPwkkTF452X7XxYh80tolDpReYwZpnD8TF4Or2v3CpSCikyt6EG"#;
 
-        let counter = Counter::new_with_code_and_count(NonTransReceiptCouples::CODE, 1).unwrap();
+        let counter = Counter::new(Some(1), None, Some(NonTransReceiptCouples::CODE), None, None, None).unwrap();
         let (rest, group) =
             NonTransReceiptCouples::from_stream_bytes(stream, &counter, &ColdCode::CtB64).unwrap();
         assert!(rest.is_empty());

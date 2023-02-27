@@ -1,4 +1,4 @@
-use crate::error::{ParsideError, ParsideResult};
+use crate::error::ParsideResult;
 use crate::message::cold_code::ColdCode;
 use crate::message::parsers::Parsers;
 use cesride::counter::Codex;
@@ -6,7 +6,7 @@ use cesride::{Counter, Matter, Prefixer, Saider, Seqner};
 use nom::multi::count;
 use nom::sequence::tuple;
 use crate::message::controller_idx_sigs::ControllerIdxSig;
-use crate::message::Group;
+use crate::message::{Group, GroupItem};
 use crate::message::groups::controller_idx_sigs::ControllerIdxSigs;
 
 #[derive(Debug, Clone, Default)]
@@ -14,55 +14,19 @@ pub struct TransIdxSigGroups {
     pub value: Vec<TransIdxSigGroup>,
 }
 
-impl TransIdxSigGroups {
-    pub const CODE: &'static str = Codex::TransIdxSigGroups;
+impl Group<TransIdxSigGroup> for TransIdxSigGroups {
+    const CODE: &'static str = Codex::TransIdxSigGroups;
 
-    pub fn new(value: Vec<TransIdxSigGroup>) -> Self {
+    fn new(value: Vec<TransIdxSigGroup>) -> Self {
         Self { value }
     }
 
-    pub fn counter(&self) -> ParsideResult<Counter> {
-        Counter::new_with_code_and_count(&Self::CODE, self.count())
-            .map_err(ParsideError::from)
+    fn value(&self) -> &Vec<TransIdxSigGroup> {
+        &self.value
     }
+}
 
-    pub fn count(&self) -> u32 {
-        self.value.len() as u32
-    }
-
-    pub fn qb64(&self) -> ParsideResult<String> {
-        let mut out = self.counter()?.qb64()?;
-        for couple in self.value.iter() {
-            out.push_str(&couple.prefixer.qb64()?);
-            out.push_str(&couple.seqner.qb64()?);
-            out.push_str(&couple.saider.qb64()?);
-            out.push_str(&couple.isigers.qb64()?);
-        }
-        Ok(out)
-    }
-
-    pub fn qb64b(&self) -> ParsideResult<Vec<u8>> {
-        let mut out = self.counter()?.qb64b()?;
-        for couple in self.value.iter() {
-            out.extend_from_slice(&couple.seqner.qb64b()?);
-            out.extend_from_slice(&couple.seqner.qb64b()?);
-            out.extend_from_slice(&couple.saider.qb64b()?);
-            out.extend_from_slice(&couple.isigers.qb64b()?);
-        }
-        Ok(out)
-    }
-
-    pub fn qb2(&self) -> ParsideResult<Vec<u8>> {
-        let mut out = self.counter()?.qb2()?;
-        for couple in self.value.iter() {
-            out.extend_from_slice(&couple.seqner.qb2()?);
-            out.extend_from_slice(&couple.seqner.qb2()?);
-            out.extend_from_slice(&couple.saider.qb2()?);
-            out.extend_from_slice(&couple.isigers.qb2()?);
-        }
-        Ok(out)
-    }
-
+impl TransIdxSigGroups {
     pub(crate) fn from_stream_bytes<'a>(
         bytes: &'a [u8],
         counter: &Counter,
@@ -108,6 +72,35 @@ impl TransIdxSigGroup {
     }
 }
 
+impl GroupItem for TransIdxSigGroup {
+    fn qb64(&self) -> ParsideResult<String> {
+        let mut out = String::new();
+        out.push_str(&self.prefixer.qb64()?);
+        out.push_str(&self.seqner.qb64()?);
+        out.push_str(&self.saider.qb64()?);
+        out.push_str(&self.isigers.qb64()?);
+        Ok(out)
+    }
+
+    fn qb64b(&self) -> ParsideResult<Vec<u8>> {
+        let mut out = Vec::new();
+        out.extend_from_slice(&self.seqner.qb64b()?);
+        out.extend_from_slice(&self.seqner.qb64b()?);
+        out.extend_from_slice(&self.saider.qb64b()?);
+        out.extend_from_slice(&self.isigers.qb64b()?);
+        Ok(out)
+    }
+
+    fn qb2(&self) -> ParsideResult<Vec<u8>> {
+        let mut out = Vec::new();
+        out.extend_from_slice(&self.seqner.qb2()?);
+        out.extend_from_slice(&self.seqner.qb2()?);
+        out.extend_from_slice(&self.saider.qb2()?);
+        out.extend_from_slice(&self.isigers.qb2()?);
+        Ok(out)
+    }
+}
+
 #[cfg(test)]
 pub mod tests {
     use super::*;
@@ -117,8 +110,7 @@ pub mod tests {
     pub fn test_parse_trans_idx_sig_groups() {
         let stream = br#"EFhg5my9DuMU6gw1CVk6QgkmZKBttWSXDzVzWVmxh0_K0AAAAAAAAAAAAAAAAAAAAAAAEFhg5my9DuMU6gw1CVk6QgkmZKBttWSXDzVzWVmxh0_K-AABAADghKct9eYTuSgSd5wdPSYG06tGX7ZRp_BDnrgbSxJpsJtrA-fP7Pa1W602gHeMrO6HZsD1z3tWV5jGlApFmVIB"#;
 
-        let counter = Counter::new_with_code_and_count(TransIdxSigGroups::CODE, 1).unwrap();
-
+        let counter = Counter::new(Some(1), None, Some(TransIdxSigGroups::CODE), None, None, None).unwrap();
         let (rest, group) =
             TransIdxSigGroups::from_stream_bytes(stream, &counter, &ColdCode::CtB64).unwrap();
         assert!(rest.is_empty());

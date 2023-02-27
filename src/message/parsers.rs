@@ -12,14 +12,6 @@ macro_rules! matter_wrapper {
     })
 }
 
-macro_rules! counter_wrapper {
-    ($func:expr, $bytes:ident) => ({
-        let counter = $func($bytes)?;
-        let size = counter.sizage()?.fs as usize;
-        Ok((&$bytes[size..], counter))
-    })
-}
-
 pub struct Parsers {}
 
 impl Parsers {
@@ -53,11 +45,15 @@ impl Parsers {
     }
 
     fn siger_from_qb64b(bytes: &[u8]) -> ParsideResult<(&[u8], Siger)> {
-        matter_wrapper!(Siger::new_with_qb64b, bytes)
+        let matter = Siger::new_with_qb64b(bytes, None)?;
+        let size = matter.raw_size()? as usize;
+        Ok((&bytes[size..], matter))
     }
 
     fn siger_from_qb2(bytes: &[u8]) -> ParsideResult<(&[u8], Siger)> {
-        matter_wrapper!(Siger::new_with_qb2, bytes)
+        let matter = Siger::new_with_qb2(bytes, None)?;
+        let size = matter.raw_size()? as usize;
+        Ok((&bytes[size..], matter))
     }
 
     pub(crate) fn cigar_parser<'a>(
@@ -74,7 +70,7 @@ impl Parsers {
         let verfer = Verfer::new_with_qb64b(bytes)?;
         let size = verfer.raw_size()? as usize;
         let bytes = &bytes[size..];
-        let cigar = Cigar::new_with_qb64b(&verfer, bytes)?;
+        let cigar = Cigar::new_with_qb64b(bytes, Some(&verfer))?;
         let size = cigar.raw_size()? as usize;
         Ok((&bytes[size..], cigar))
     }
@@ -83,14 +79,14 @@ impl Parsers {
         let verfer = Verfer::new_with_qb2(bytes)?;
         let size = verfer.raw_size()? as usize;
         let bytes = &bytes[size..];
-        let cigar = Cigar::new_with_qb2(&verfer, bytes)?;
+        let cigar = Cigar::new_with_qb2(bytes, Some(&verfer))?;
         let size = cigar.raw_size()? as usize;
         Ok((&bytes[size..], cigar))
     }
 
     pub(crate) fn prefixer_parser<'a>(
         cold_code: &ColdCode,
-    ) -> ParsideResult<fn(&'a [u8]) -> nom::IResult<&'a [u8], Verfer>> {
+    ) -> ParsideResult<fn(&'a [u8]) -> nom::IResult<&'a [u8], Prefixer>> {
         match cold_code {
             ColdCode::CtB64 | ColdCode::OpB64 => Ok(nomify!(Self::prefixer_from_qb64b)),
             ColdCode::CtOpB2 => Ok(nomify!(Self::prefixer_from_qb2)),
@@ -102,13 +98,13 @@ impl Parsers {
         matter_wrapper!(Prefixer::new_with_qb64b, bytes)
     }
 
-    fn prefixer_from_qb2(bytes: &[u8]) -> ParsideResult<(&[u8], Verfer)> {
+    fn prefixer_from_qb2(bytes: &[u8]) -> ParsideResult<(&[u8], Prefixer)> {
         matter_wrapper!(Prefixer::new_with_qb2, bytes)
     }
 
     pub(crate) fn seqner_parser<'a>(
         cold_code: &ColdCode,
-    ) -> ParsideResult<fn(&'a [u8]) -> nom::IResult<&'a [u8], Verfer>> {
+    ) -> ParsideResult<fn(&'a [u8]) -> nom::IResult<&'a [u8], Seqner>> {
         match cold_code {
             ColdCode::CtB64 | ColdCode::OpB64 => Ok(nomify!(Self::seqner_from_qb64b)),
             ColdCode::CtOpB2 => Ok(nomify!(Self::seqner_from_qb2)),
@@ -120,7 +116,7 @@ impl Parsers {
         matter_wrapper!(Seqner::new_with_qb64b, bytes)
     }
 
-    fn seqner_from_qb2(bytes: &[u8]) -> ParsideResult<(&[u8], Verfer)> {
+    fn seqner_from_qb2(bytes: &[u8]) -> ParsideResult<(&[u8], Seqner)> {
         matter_wrapper!(Seqner::new_with_qb2, bytes)
     }
 
@@ -171,11 +167,15 @@ impl Parsers {
     }
 
     fn counter_from_qb64b(bytes: &[u8]) -> ParsideResult<(&[u8], Counter)> {
-        counter_wrapper!(Counter::new_with_qb64b, bytes)
+        let counter = Counter::new(None, None, None, Some(bytes), None, None)?;
+        let size = counter.raw_size()? as usize;
+        Ok((&bytes[size..], counter))
     }
 
     fn counter_from_qb2(bytes: &[u8]) -> ParsideResult<(&[u8], Counter)> {
-        counter_wrapper!(Counter::new_with_qb2, bytes)
+        let counter = Counter::new(None, None, None, None, None, Some(bytes))?;
+        let size = counter.raw_size()? as usize;
+        Ok((&bytes[size..], counter))
     }
 
     pub(crate) fn siger_list_parser<'a>(
