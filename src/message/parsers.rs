@@ -2,12 +2,13 @@ use crate::error::{ParsideError, ParsideResult};
 use crate::message::cold_code::ColdCode;
 use crate::nomify;
 use cesride::{Counter, Matter, Diger, Verfer, Dater, Saider, Cigar, Siger, Indexer, Prefixer, Seqner};
+use cesride::matter::raw_size;
 use nom::multi::count;
 
 macro_rules! matter_wrapper {
     ($func:expr, $bytes:ident) => ({
         let matter = $func($bytes)?;
-        let size = matter.raw_size()? as usize;
+        let size = raw_size(&matter.code())? as usize;
         Ok((&$bytes[size..], matter))
     })
 }
@@ -46,13 +47,13 @@ impl Parsers {
 
     fn siger_from_qb64b(bytes: &[u8]) -> ParsideResult<(&[u8], Siger)> {
         let matter = Siger::new_with_qb64b(bytes, None)?;
-        let size = matter.raw_size()? as usize;
+        let size = raw_size(&matter.code())? as usize;
         Ok((&bytes[size..], matter))
     }
 
     fn siger_from_qb2(bytes: &[u8]) -> ParsideResult<(&[u8], Siger)> {
         let matter = Siger::new_with_qb2(bytes, None)?;
-        let size = matter.raw_size()? as usize;
+        let size = raw_size(&matter.code())? as usize;
         Ok((&bytes[size..], matter))
     }
 
@@ -68,19 +69,19 @@ impl Parsers {
 
     fn cigar_from_qb64b(bytes: &[u8]) -> ParsideResult<(&[u8], Cigar)> {
         let verfer = Verfer::new_with_qb64b(bytes)?;
-        let size = verfer.raw_size()? as usize;
+        let size = raw_size(&verfer.code())? as usize;
         let bytes = &bytes[size..];
         let cigar = Cigar::new_with_qb64b(bytes, Some(&verfer))?;
-        let size = cigar.raw_size()? as usize;
+        let size = raw_size(&cigar.code())? as usize;
         Ok((&bytes[size..], cigar))
     }
 
     fn cigar_from_qb2(bytes: &[u8]) -> ParsideResult<(&[u8], Cigar)> {
         let verfer = Verfer::new_with_qb2(bytes)?;
-        let size = verfer.raw_size()? as usize;
+        let size = raw_size(&verfer.code())? as usize;
         let bytes = &bytes[size..];
         let cigar = Cigar::new_with_qb2(bytes, Some(&verfer))?;
-        let size = cigar.raw_size()? as usize;
+        let size = raw_size(&cigar.code())? as usize;
         Ok((&bytes[size..], cigar))
     }
 
@@ -168,13 +169,13 @@ impl Parsers {
 
     fn counter_from_qb64b(bytes: &[u8]) -> ParsideResult<(&[u8], Counter)> {
         let counter = Counter::new(None, None, None, Some(bytes), None, None)?;
-        let size = counter.raw_size()? as usize;
+        let size = raw_size(&counter.code())? as usize;
         Ok((&bytes[size..], counter))
     }
 
     fn counter_from_qb2(bytes: &[u8]) -> ParsideResult<(&[u8], Counter)> {
         let counter = Counter::new(None, None, None, None, None, Some(bytes))?;
-        let size = counter.raw_size()? as usize;
+        let size = raw_size(&counter.code())? as usize;
         Ok((&bytes[size..], counter))
     }
 
