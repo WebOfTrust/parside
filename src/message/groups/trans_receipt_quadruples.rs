@@ -1,11 +1,11 @@
 use crate::error::ParsideResult;
 use crate::message::cold_code::ColdCode;
 use crate::message::parsers::Parsers;
+use crate::message::{Group, GroupItem};
 use cesride::counter::Codex;
 use cesride::{Counter, Indexer, Matter, Prefixer, Saider, Seqner, Siger};
 use nom::multi::count;
 use nom::sequence::tuple;
-use crate::message::{Group, GroupItem};
 
 #[derive(Debug, Clone, Default)]
 pub struct TransReceiptQuadruples {
@@ -63,12 +63,7 @@ pub struct TransReceiptQuadruple {
 
 impl TransReceiptQuadruple {
     pub fn new(prefixer: Prefixer, seqner: Seqner, saider: Saider, siger: Siger) -> Self {
-        Self {
-            prefixer,
-            seqner,
-            saider,
-            siger,
-        }
+        Self { prefixer, seqner, saider, siger }
     }
 }
 

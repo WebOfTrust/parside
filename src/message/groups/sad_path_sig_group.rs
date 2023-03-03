@@ -1,8 +1,8 @@
 use crate::error::{ParsideError, ParsideResult};
 use crate::message::cold_code::ColdCode;
+use crate::message::{Group, GroupItem};
 use cesride::counter::Codex;
 use cesride::{Counter, Indexer, Siger};
-use crate::message::{Group, GroupItem};
 
 // FIXME: Implement proper definition
 #[derive(Debug, Clone, Default)]
@@ -34,7 +34,7 @@ impl SadPathSigGroups {
 
 #[derive(Debug, Clone, Default)]
 pub struct SadPathSigGroup {
-    pub siger: Siger
+    pub siger: Siger,
 }
 
 impl SadPathSigGroup {
@@ -42,7 +42,6 @@ impl SadPathSigGroup {
         Self { siger }
     }
 }
-
 
 impl GroupItem for SadPathSigGroup {
     fn qb64(&self) -> ParsideResult<String> {

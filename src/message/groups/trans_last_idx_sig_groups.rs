@@ -1,13 +1,13 @@
 use crate::error::ParsideResult;
 use crate::message::cold_code::ColdCode;
-use crate::message::parsers::Parsers;
-use cesride::counter::Codex;
-use cesride::{Counter, Prefixer, Matter};
-use nom::multi::count;
-use nom::sequence::tuple;
-use crate::message::{Group, GroupItem};
 use crate::message::controller_idx_sigs::ControllerIdxSig;
 use crate::message::groups::controller_idx_sigs::ControllerIdxSigs;
+use crate::message::parsers::Parsers;
+use crate::message::{Group, GroupItem};
+use cesride::counter::Codex;
+use cesride::{Counter, Matter, Prefixer};
+use nom::multi::count;
+use nom::sequence::tuple;
 
 #[derive(Debug, Clone, Default)]
 pub struct TransLastIdxSigGroups {
@@ -33,10 +33,7 @@ impl TransLastIdxSigGroups {
         cold_code: &ColdCode,
     ) -> ParsideResult<(&'a [u8], TransLastIdxSigGroups)> {
         let (rest, body) = count(
-            tuple((
-                Parsers::prefixer_parser(cold_code)?,
-                Parsers::siger_list_parser(cold_code)?,
-            )),
+            tuple((Parsers::prefixer_parser(cold_code)?, Parsers::siger_list_parser(cold_code)?)),
             counter.count() as usize,
         )(bytes)?;
 
@@ -44,9 +41,8 @@ impl TransLastIdxSigGroups {
             .into_iter()
             .map(|(prefixer, isigers)| TransLastIdxSigGroup {
                 prefixer,
-                isigers:
-                ControllerIdxSigs::new(
-                    isigers.into_iter().map(|siger| ControllerIdxSig::new(siger)).collect()
+                isigers: ControllerIdxSigs::new(
+                    isigers.into_iter().map(|siger| ControllerIdxSig::new(siger)).collect(),
                 ),
             })
             .collect();
@@ -99,14 +95,13 @@ pub mod tests {
     pub fn test_parse_trans_last_idx_sig_groups() {
         let stream = br#"EB1f36VmoizOIpBIBv3X4ZiWJQWjtKJ7TMmsZltT0B32-AABAAAKB9u6wyLS9kl_iGVGCqrs-3XqFbyGeOKuiOEA9JZpxI9GMv0GJv2wbY1-sOD_HOJcvXO7LSO8g8MSeRXjtL4I"#;
 
-        let counter = Counter::new(Some(1), None, Some(TransLastIdxSigGroups::CODE), None, None, None).unwrap();
+        let counter =
+            Counter::new(Some(1), None, Some(TransLastIdxSigGroups::CODE), None, None, None)
+                .unwrap();
         let (rest, group) =
             TransLastIdxSigGroups::from_stream_bytes(stream, &counter, &ColdCode::CtB64).unwrap();
         assert!(rest.is_empty());
         assert_eq!(1, group.value.len());
-        assert_eq!(
-            MatterCodex::Blake3_256.to_string(),
-            group.value[0].prefixer.code()
-        );
+        assert_eq!(MatterCodex::Blake3_256.to_string(), group.value[0].prefixer.code());
     }
 }

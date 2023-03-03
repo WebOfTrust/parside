@@ -22,9 +22,7 @@ impl CustomPayload {
         match stream.next() {
             Some(Ok(value)) => Ok((&s[stream.byte_offset()..], CustomPayload { value })),
             Some(Err(err)) => Err(ParsideError::PayloadDeserializeError(err.to_string())),
-            None => Err(ParsideError::PayloadDeserializeError(
-                "End of stream".to_string(),
-            )),
+            None => Err(ParsideError::PayloadDeserializeError("End of stream".to_string())),
         }
     }
 
@@ -33,19 +31,14 @@ impl CustomPayload {
         match stream.next() {
             Some(Ok(value)) => Ok((&s[stream.byte_offset()..], CustomPayload { value })),
             Some(Err(err)) => Err(ParsideError::PayloadDeserializeError(err.to_string())),
-            None => Err(ParsideError::PayloadDeserializeError(
-                "End of stream".to_string(),
-            )),
+            None => Err(ParsideError::PayloadDeserializeError("End of stream".to_string())),
         }
     }
 
     pub(crate) fn from_mgpk_stream(s: &[u8]) -> ParsideResult<(&[u8], CustomPayload)> {
         let mut deser = serde_mgpk::Deserializer::new(Cursor::new(s));
         match Deserialize::deserialize(&mut deser) {
-            Ok(value) => Ok((
-                &s[deser.get_ref().position() as usize..],
-                CustomPayload { value },
-            )),
+            Ok(value) => Ok((&s[deser.get_ref().position() as usize..], CustomPayload { value })),
             Err(err) => Err(ParsideError::PayloadDeserializeError(err.to_string())),
         }
     }

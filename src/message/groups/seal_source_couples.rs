@@ -1,11 +1,11 @@
 use crate::error::ParsideResult;
 use crate::message::cold_code::ColdCode;
 use crate::message::parsers::Parsers;
+use crate::message::{Group, GroupItem};
 use cesride::counter::Codex;
 use cesride::{Counter, Matter, Saider, Seqner};
 use nom::multi::count;
 use nom::sequence::tuple;
-use crate::message::{Group, GroupItem};
 
 #[derive(Debug, Clone, Default)]
 pub struct SealSourceCouples {
@@ -31,16 +31,11 @@ impl SealSourceCouples {
         cold_code: &ColdCode,
     ) -> ParsideResult<(&'a [u8], SealSourceCouples)> {
         let (rest, body) = count(
-            tuple((
-                Parsers::seqner_parser(cold_code)?,
-                Parsers::saider_parser(cold_code)?,
-            )),
+            tuple((Parsers::seqner_parser(cold_code)?, Parsers::saider_parser(cold_code)?)),
             counter.count() as usize,
         )(bytes)?;
-        let body = body
-            .into_iter()
-            .map(|(seqner, saider)| SealSourceCouple { seqner, saider })
-            .collect();
+        let body =
+            body.into_iter().map(|(seqner, saider)| SealSourceCouple { seqner, saider }).collect();
 
         return Ok((rest, SealSourceCouples { value: body }));
     }

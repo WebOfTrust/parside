@@ -1,16 +1,18 @@
 use crate::error::{ParsideError, ParsideResult};
 use crate::message::cold_code::ColdCode;
 use crate::nomify;
-use cesride::{Counter, Matter, Diger, Verfer, Dater, Saider, Cigar, Siger, Indexer, Prefixer, Seqner};
 use cesride::matter::raw_size;
+use cesride::{
+    Cigar, Counter, Dater, Diger, Indexer, Matter, Prefixer, Saider, Seqner, Siger, Verfer,
+};
 use nom::multi::count;
 
 macro_rules! matter_wrapper {
-    ($func:expr, $bytes:ident) => ({
+    ($func:expr, $bytes:ident) => {{
         let matter = $func($bytes)?;
         let size = raw_size(&matter.code())? as usize;
         Ok((&$bytes[size..], matter))
-    })
+    }};
 }
 
 pub struct Parsers {}
@@ -191,10 +193,8 @@ impl Parsers {
 
     fn siger_list_from_qb64b<'a>(bytes: &'a [u8]) -> ParsideResult<(&'a [u8], Vec<Siger>)> {
         let (rest, counter) = Self::counter_from_qb64b(&bytes)?;
-        let (rest, values) = count(
-            nomify!(Parsers::siger_from_qb64b),
-            counter.count() as usize,
-        )(rest)?;
+        let (rest, values) =
+            count(nomify!(Parsers::siger_from_qb64b), counter.count() as usize)(rest)?;
         Ok((rest, values))
     }
 

@@ -1,34 +1,34 @@
-pub mod group;
 pub mod attached_material_quadlets;
 pub mod controller_idx_sigs;
 pub mod first_seen_replay_couples;
+pub mod group;
 pub mod non_trans_receipt_couples;
+pub mod pathed_material_quadlets;
+pub mod sad_path_sig;
+pub mod sad_path_sig_group;
 pub mod seal_source_couples;
 pub mod trans_idx_sig_groups;
 pub mod trans_last_idx_sig_groups;
 pub mod trans_receipt_quadruples;
 pub mod witness_idx_sigs;
-pub mod sad_path_sig_group;
-pub mod sad_path_sig;
-pub mod pathed_material_quadlets;
 
 use crate::error::{ParsideError, ParsideResult};
 use crate::message::cold_code::ColdCode;
 use crate::message::parsers::Parsers;
 
-pub use self::group::{Group, GroupItem};
-pub use self::attached_material_quadlets::{AttachedMaterialQuadlets};
+pub use self::attached_material_quadlets::AttachedMaterialQuadlets;
 pub use self::controller_idx_sigs::{ControllerIdxSig, ControllerIdxSigs};
 pub use self::first_seen_replay_couples::{FirstSeenReplayCouple, FirstSeenReplayCouples};
+pub use self::group::{Group, GroupItem};
 pub use self::non_trans_receipt_couples::{NonTransReceiptCouple, NonTransReceiptCouples};
+pub use self::pathed_material_quadlets::{PathedMaterialQuadlet, PathedMaterialQuadlets};
+pub use self::sad_path_sig::{SadPathSig, SadPathSigs};
+pub use self::sad_path_sig_group::{SadPathSigGroup, SadPathSigGroups};
 pub use self::seal_source_couples::{SealSourceCouple, SealSourceCouples};
 pub use self::trans_idx_sig_groups::{TransIdxSigGroup, TransIdxSigGroups};
 pub use self::trans_last_idx_sig_groups::{TransLastIdxSigGroup, TransLastIdxSigGroups};
 pub use self::trans_receipt_quadruples::{TransReceiptQuadruple, TransReceiptQuadruples};
 pub use self::witness_idx_sigs::{WitnessIdxSig, WitnessIdxSigs};
-pub use self::sad_path_sig_group::{SadPathSigGroup, SadPathSigGroups};
-pub use self::sad_path_sig::{SadPathSig, SadPathSigs};
-pub use self::pathed_material_quadlets::{PathedMaterialQuadlet, PathedMaterialQuadlets};
 
 #[derive(Debug, Clone)]
 pub enum CesrGroup {
@@ -64,8 +64,7 @@ impl CesrGroup {
                 Ok((rest, CesrGroup::ControllerIdxSigsVariant { value: group }))
             }
             WitnessIdxSigs::CODE => {
-                let (rest, group) =
-                    WitnessIdxSigs::from_stream_bytes(rest, &counter, &cold_code)?;
+                let (rest, group) = WitnessIdxSigs::from_stream_bytes(rest, &counter, &cold_code)?;
                 Ok((rest, CesrGroup::WitnessIdxSigsVariant { value: group }))
             }
             NonTransReceiptCouples::CODE => {
@@ -104,8 +103,7 @@ impl CesrGroup {
                 Ok((rest, CesrGroup::SadPathSigGroupVariant { value: group }))
             }
             SadPathSigs::CODE => {
-                let (rest, group) =
-                    SadPathSigs::from_stream_bytes(rest, &counter, &cold_code)?;
+                let (rest, group) = SadPathSigs::from_stream_bytes(rest, &counter, &cold_code)?;
                 Ok((rest, CesrGroup::SadPathSigVariant { value: group }))
             }
             PathedMaterialQuadlets::CODE => {
@@ -113,18 +111,19 @@ impl CesrGroup {
                     PathedMaterialQuadlets::from_stream_bytes(rest, &counter, &cold_code)?;
                 Ok((rest, CesrGroup::PathedMaterialQuadletsVariant { value: group }))
             }
-            _ => {
-                Err(ParsideError::Unexpected(format!("Unexpected counter code {:?}", counter.code())))
-            }
+            _ => Err(ParsideError::Unexpected(format!(
+                "Unexpected counter code {:?}",
+                counter.code()
+            ))),
         }
     }
 }
 
 #[cfg(test)]
 pub mod tests {
-    use cesride::{Indexer, Matter};
     use super::*;
     pub use cesride::matter::Codex as MatterCodex;
+    use cesride::{Indexer, Matter};
 
     #[test]
     pub fn test_parse_trans_idx_sig_groups() {
@@ -135,18 +134,9 @@ pub mod tests {
         match group {
             CesrGroup::TransIdxSigGroupsVariant { value: group } => {
                 assert_eq!(1, group.value.len());
-                assert_eq!(
-                    MatterCodex::Blake3_256.to_string(),
-                    group.value[0].prefixer.code()
-                );
-                assert_eq!(
-                    MatterCodex::Salt_128.to_string(),
-                    group.value[0].seqner.code()
-                );
-                assert_eq!(
-                    MatterCodex::Blake3_256.to_string(),
-                    group.value[0].saider.code()
-                );
+                assert_eq!(MatterCodex::Blake3_256.to_string(), group.value[0].prefixer.code());
+                assert_eq!(MatterCodex::Salt_128.to_string(), group.value[0].seqner.code());
+                assert_eq!(MatterCodex::Blake3_256.to_string(), group.value[0].saider.code());
             }
             _ => assert!(false, "Unexpected case"),
         }
@@ -161,10 +151,7 @@ pub mod tests {
         match group {
             CesrGroup::ControllerIdxSigsVariant { value: group } => {
                 assert_eq!(1, group.value.len());
-                assert_eq!(
-                    MatterCodex::Ed25519_Seed.to_string(),
-                    group.value[0].siger.code()
-                );
+                assert_eq!(MatterCodex::Ed25519_Seed.to_string(), group.value[0].siger.code());
             }
             _ => assert!(false, "Unexpected case"),
         }
@@ -179,10 +166,7 @@ pub mod tests {
         match group {
             CesrGroup::NonTransReceiptCouplesVariant { value: group } => {
                 assert_eq!(1, group.value.len());
-                assert_eq!(
-                    MatterCodex::Ed25519_Sig.to_string(),
-                    group.value[0].cigar.code()
-                );
+                assert_eq!(MatterCodex::Ed25519_Sig.to_string(), group.value[0].cigar.code());
             }
             _ => assert!(false, "Unexpected case"),
         }
@@ -204,10 +188,7 @@ pub mod tests {
         match group {
             CesrGroup::TransLastIdxSigGroupsVariant { value: group } => {
                 assert_eq!(1, group.value.len());
-                assert_eq!(
-                    MatterCodex::Blake3_256.to_string(),
-                    group.value[0].prefixer.code()
-                );
+                assert_eq!(MatterCodex::Blake3_256.to_string(), group.value[0].prefixer.code());
             }
             _ => assert!(false, "Unexpected case"),
         }

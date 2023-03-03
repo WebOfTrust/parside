@@ -2,4 +2,4 @@ pub mod error;
 pub mod message;
 mod utils;
 
-pub use message::{Message, MessageList, CesrGroup, CustomPayload, Group};
+pub use message::{CesrGroup, CustomPayload, Group, Message, MessageList};

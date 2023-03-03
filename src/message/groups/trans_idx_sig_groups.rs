@@ -1,13 +1,13 @@
 use crate::error::ParsideResult;
 use crate::message::cold_code::ColdCode;
+use crate::message::controller_idx_sigs::ControllerIdxSig;
+use crate::message::groups::controller_idx_sigs::ControllerIdxSigs;
 use crate::message::parsers::Parsers;
+use crate::message::{Group, GroupItem};
 use cesride::counter::Codex;
 use cesride::{Counter, Matter, Prefixer, Saider, Seqner};
 use nom::multi::count;
 use nom::sequence::tuple;
-use crate::message::controller_idx_sigs::ControllerIdxSig;
-use crate::message::{Group, GroupItem};
-use crate::message::groups::controller_idx_sigs::ControllerIdxSigs;
 
 #[derive(Debug, Clone, Default)]
 pub struct TransIdxSigGroups {
@@ -49,7 +49,7 @@ impl TransIdxSigGroups {
                 seqner,
                 saider,
                 isigers: ControllerIdxSigs::new(
-                    isigers.into_iter().map(|siger| ControllerIdxSig::new(siger)).collect()
+                    isigers.into_iter().map(|siger| ControllerIdxSig::new(siger)).collect(),
                 ),
             })
             .collect();
@@ -67,7 +67,12 @@ pub struct TransIdxSigGroup {
 }
 
 impl TransIdxSigGroup {
-    pub fn new(prefixer: Prefixer, seqner: Seqner, saider: Saider, isigers: ControllerIdxSigs) -> Self {
+    pub fn new(
+        prefixer: Prefixer,
+        seqner: Seqner,
+        saider: Saider,
+        isigers: ControllerIdxSigs,
+    ) -> Self {
         Self { prefixer, seqner, saider, isigers }
     }
 }
@@ -110,22 +115,14 @@ pub mod tests {
     pub fn test_parse_trans_idx_sig_groups() {
         let stream = br#"EFhg5my9DuMU6gw1CVk6QgkmZKBttWSXDzVzWVmxh0_K0AAAAAAAAAAAAAAAAAAAAAAAEFhg5my9DuMU6gw1CVk6QgkmZKBttWSXDzVzWVmxh0_K-AABAADghKct9eYTuSgSd5wdPSYG06tGX7ZRp_BDnrgbSxJpsJtrA-fP7Pa1W602gHeMrO6HZsD1z3tWV5jGlApFmVIB"#;
 
-        let counter = Counter::new(Some(1), None, Some(TransIdxSigGroups::CODE), None, None, None).unwrap();
+        let counter =
+            Counter::new(Some(1), None, Some(TransIdxSigGroups::CODE), None, None, None).unwrap();
         let (rest, group) =
             TransIdxSigGroups::from_stream_bytes(stream, &counter, &ColdCode::CtB64).unwrap();
         assert!(rest.is_empty());
         assert_eq!(1, group.value.len());
-        assert_eq!(
-            MatterCodex::Blake3_256.to_string(),
-            group.value[0].prefixer.code()
-        );
-        assert_eq!(
-            MatterCodex::Salt_128.to_string(),
-            group.value[0].seqner.code()
-        );
-        assert_eq!(
-            MatterCodex::Blake3_256.to_string(),
-            group.value[0].saider.code()
-        );
+        assert_eq!(MatterCodex::Blake3_256.to_string(), group.value[0].prefixer.code());
+        assert_eq!(MatterCodex::Salt_128.to_string(), group.value[0].seqner.code());
+        assert_eq!(MatterCodex::Blake3_256.to_string(), group.value[0].saider.code());
     }
 }

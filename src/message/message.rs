@@ -1,9 +1,9 @@
 use serde::de::DeserializeOwned;
 
 use crate::error::{ParsideError, ParsideResult};
+use crate::message::cold_code::ColdCode;
 use crate::message::custom_payload::CustomPayload;
 use crate::message::groups::CesrGroup;
-use crate::message::cold_code::ColdCode;
 
 #[derive(Debug)]
 pub enum Message {
@@ -29,10 +29,9 @@ impl Message {
                 .map(|(rest, value)| (rest, Message::Custom { value })),
             ColdCode::MGPK1 | ColdCode::MGPK2 => CustomPayload::from_mgpk_stream(bytes)
                 .map(|(rest, value)| (rest, Message::Custom { value })),
-            ColdCode::Free => Err(ParsideError::Unexpected(format!(
-                "Unsupported cold code {}",
-                bytes[0]
-            ))),
+            ColdCode::Free => {
+                Err(ParsideError::Unexpected(format!("Unsupported cold code {}", bytes[0])))
+            }
         }
     }
 

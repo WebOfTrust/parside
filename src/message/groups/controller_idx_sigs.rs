@@ -1,10 +1,10 @@
 use crate::error::{ParsideError, ParsideResult};
 use crate::message::cold_code::ColdCode;
 use crate::message::parsers::Parsers;
-use cesride::{Counter, Indexer, Siger};
-use cesride::counter::Codex as CounterCodex;
-use nom::multi::count;
 use crate::message::{Group, GroupItem};
+use cesride::counter::Codex as CounterCodex;
+use cesride::{Counter, Indexer, Siger};
+use nom::multi::count;
 
 #[derive(Debug, Clone, Default)]
 pub struct ControllerIdxSigs {
@@ -31,17 +31,14 @@ impl ControllerIdxSigs {
     ) -> ParsideResult<(&'a [u8], ControllerIdxSigs)> {
         let (rest, body) =
             count(Parsers::siger_parser(cold_code)?, counter.count() as usize)(bytes)?;
-        let body = body
-            .into_iter()
-            .map(|siger| ControllerIdxSig { siger })
-            .collect();
+        let body = body.into_iter().map(|siger| ControllerIdxSig { siger }).collect();
         return Ok((rest, ControllerIdxSigs { value: body }));
     }
 }
 
 #[derive(Debug, Clone, Default)]
 pub struct ControllerIdxSig {
-    pub siger: Siger
+    pub siger: Siger,
 }
 
 impl ControllerIdxSig {
@@ -49,7 +46,6 @@ impl ControllerIdxSig {
         Self { siger }
     }
 }
-
 
 impl GroupItem for ControllerIdxSig {
     fn qb64(&self) -> ParsideResult<String> {
@@ -74,15 +70,13 @@ pub mod tests {
     pub fn test_parse_controller_idx_sigs() {
         let stream = br#"AABg3q8uNg1A2jhEAdbKGf-QupQhNnmZQx3zIyPLWBe6qqLT5ynytivf9EwJhxyhy87a0x2cezDdil4SsM2xxs0O"#;
 
-        let counter = Counter::new(Some(1), None, Some(ControllerIdxSigs::CODE), None, None, None).unwrap();
+        let counter =
+            Counter::new(Some(1), None, Some(ControllerIdxSigs::CODE), None, None, None).unwrap();
         let (rest, group) =
             ControllerIdxSigs::from_stream_bytes(stream, &counter, &ColdCode::CtB64).unwrap();
 
         assert!(rest.is_empty());
         assert_eq!(1, group.value.len());
-        assert_eq!(
-            MatterCodex::Ed25519_Seed.to_string(),
-            group.value[0].siger.code()
-        );
+        assert_eq!(MatterCodex::Ed25519_Seed.to_string(), group.value[0].siger.code());
     }
 }

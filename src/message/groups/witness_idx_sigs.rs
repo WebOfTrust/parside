@@ -1,10 +1,10 @@
 use crate::error::{ParsideError, ParsideResult};
 use crate::message::cold_code::ColdCode;
 use crate::message::parsers::Parsers;
+use crate::message::{Group, GroupItem};
 use cesride::counter::Codex;
 use cesride::{Counter, Indexer, Siger};
 use nom::multi::count;
-use crate::message::{Group, GroupItem};
 
 #[derive(Debug, Clone, Default)]
 pub struct WitnessIdxSigs {
@@ -31,17 +31,14 @@ impl WitnessIdxSigs {
     ) -> ParsideResult<(&'a [u8], WitnessIdxSigs)> {
         let (rest, body) =
             count(Parsers::siger_parser(cold_code)?, counter.count() as usize)(bytes)?;
-        let body = body
-            .into_iter()
-            .map(|siger| WitnessIdxSig { siger })
-            .collect();
+        let body = body.into_iter().map(|siger| WitnessIdxSig { siger }).collect();
         return Ok((rest, WitnessIdxSigs { value: body }));
     }
 }
 
 #[derive(Debug, Clone, Default)]
 pub struct WitnessIdxSig {
-    pub siger: Siger
+    pub siger: Siger,
 }
 
 impl WitnessIdxSig {

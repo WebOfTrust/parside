@@ -1,11 +1,11 @@
 use crate::error::ParsideResult;
 use crate::message::cold_code::ColdCode;
 use crate::message::parsers::Parsers;
-use cesride::{Counter, Dater, Matter, Seqner};
+use crate::message::{Group, GroupItem};
 use cesride::counter::Codex as CounterCodex;
+use cesride::{Counter, Dater, Matter, Seqner};
 use nom::multi::count;
 use nom::sequence::tuple;
-use crate::message::{Group, GroupItem};
 
 #[derive(Debug, Clone, Default)]
 pub struct FirstSeenReplayCouples {
@@ -31,10 +31,7 @@ impl FirstSeenReplayCouples {
         cold_code: &ColdCode,
     ) -> ParsideResult<(&'a [u8], FirstSeenReplayCouples)> {
         let (rest, body) = count(
-            tuple((
-                Parsers::seqner_parser(cold_code)?,
-                Parsers::dater_parser(cold_code)?,
-            )),
+            tuple((Parsers::seqner_parser(cold_code)?, Parsers::dater_parser(cold_code)?)),
             counter.count() as usize,
         )(bytes)?;
         let body = body
@@ -57,7 +54,6 @@ impl FirstSeenReplayCouple {
         Self { firner, dater }
     }
 }
-
 
 impl GroupItem for FirstSeenReplayCouple {
     fn qb64(&self) -> ParsideResult<String> {
