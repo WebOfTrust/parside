@@ -42,12 +42,12 @@ impl TransLastIdxSigGroups {
             .map(|(prefixer, isigers)| TransLastIdxSigGroup {
                 prefixer,
                 isigers: ControllerIdxSigs::new(
-                    isigers.into_iter().map(|siger| ControllerIdxSig::new(siger)).collect(),
+                    isigers.into_iter().map(ControllerIdxSig::new).collect(),
                 ),
             })
             .collect();
 
-        return Ok((rest, TransLastIdxSigGroups { value: body }));
+        Ok((rest, TransLastIdxSigGroups { value: body }))
     }
 }
 

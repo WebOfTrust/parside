@@ -32,7 +32,7 @@ impl NonTransReceiptCouples {
         let (rest, body) =
             count(Parsers::cigar_parser(cold_code)?, counter.count() as usize)(bytes)?;
         let body = body.into_iter().map(|cigar| NonTransReceiptCouple { cigar }).collect();
-        return Ok((rest, NonTransReceiptCouples { value: body }));
+        Ok((rest, NonTransReceiptCouples { value: body }))
     }
 }
 

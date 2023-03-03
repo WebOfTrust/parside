@@ -13,11 +13,11 @@ pub(crate) enum ColdCode {
     // OpCode Base64
     OpB64 = 0b010,
     // JSON Map Event Start
-    JSON = 0b011,
+    Json = 0b011,
     // MGPK Fixed Map Event Start
     MGPK1 = 0b100,
     // CBOR Map Event Start
-    CBOR = 0b101,
+    Cbor = 0b101,
     // MGPK Big 16 or 32 Map Event Start
     MGPK2 = 0b110,
     // CountCode or OpCode Base2

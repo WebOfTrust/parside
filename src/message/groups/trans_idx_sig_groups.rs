@@ -49,12 +49,12 @@ impl TransIdxSigGroups {
                 seqner,
                 saider,
                 isigers: ControllerIdxSigs::new(
-                    isigers.into_iter().map(|siger| ControllerIdxSig::new(siger)).collect(),
+                    isigers.into_iter().map(ControllerIdxSig::new).collect(),
                 ),
             })
             .collect();
 
-        return Ok((rest, TransIdxSigGroups { value: body }));
+        Ok((rest, TransIdxSigGroups { value: body }))
     }
 }
 

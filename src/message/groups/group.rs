@@ -9,7 +9,7 @@ pub trait Group<T: GroupItem> {
     fn value(&self) -> &Vec<T>;
 
     fn counter(&self) -> ParsideResult<Counter> {
-        Counter::new(Some(self.count()), None, Some(&Self::CODE), None, None, None)
+        Counter::new(Some(self.count()), None, Some(Self::CODE), None, None, None)
             .map_err(ParsideError::from)
     }
 

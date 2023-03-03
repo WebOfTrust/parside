@@ -12,7 +12,7 @@ pub struct CustomPayload {
 }
 
 impl CustomPayload {
-    pub fn to_typed_message<'de, D: DeserializeOwned>(&self) -> ParsideResult<D> {
+    pub fn to_typed_message<D>(&self) -> ParsideResult<D> where D: DeserializeOwned {
         serde_json::from_value::<D>(self.value.to_owned())
             .map_err(|err| ParsideError::PayloadDeserializeError(err.to_string()))
     }

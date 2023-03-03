@@ -17,11 +17,13 @@ macro_rules! matter_wrapper {
 
 pub struct Parsers {}
 
+pub type ParserRet<'a, T> = fn(&'a [u8]) -> nom::IResult<&'a [u8], T>;
+
 impl Parsers {
     #[allow(unused)]
     pub(crate) fn diger_parser<'a>(
         cold_code: &ColdCode,
-    ) -> ParsideResult<fn(&'a [u8]) -> nom::IResult<&'a [u8], Diger>> {
+    ) -> ParsideResult<ParserRet<'a, Diger>> {
         match cold_code {
             ColdCode::CtB64 | ColdCode::OpB64 => Ok(nomify!(Self::diger_from_qb64b)),
             ColdCode::CtOpB2 => Ok(nomify!(Self::diger_from_qb2)),
@@ -39,7 +41,7 @@ impl Parsers {
 
     pub(crate) fn siger_parser<'a>(
         cold_code: &ColdCode,
-    ) -> ParsideResult<fn(&'a [u8]) -> nom::IResult<&'a [u8], Siger>> {
+    ) -> ParsideResult<ParserRet<'a, Siger>> {
         match cold_code {
             ColdCode::CtB64 | ColdCode::OpB64 => Ok(nomify!(Self::siger_from_qb64b)),
             ColdCode::CtOpB2 => Ok(nomify!(Self::siger_from_qb2)),
@@ -61,7 +63,7 @@ impl Parsers {
 
     pub(crate) fn cigar_parser<'a>(
         cold_code: &ColdCode,
-    ) -> ParsideResult<fn(&'a [u8]) -> nom::IResult<&'a [u8], Cigar>> {
+    ) -> ParsideResult<ParserRet<'a, Cigar>> {
         match cold_code {
             ColdCode::CtB64 | ColdCode::OpB64 => Ok(nomify!(Self::cigar_from_qb64b)),
             ColdCode::CtOpB2 => Ok(nomify!(Self::cigar_from_qb2)),
@@ -89,7 +91,7 @@ impl Parsers {
 
     pub(crate) fn prefixer_parser<'a>(
         cold_code: &ColdCode,
-    ) -> ParsideResult<fn(&'a [u8]) -> nom::IResult<&'a [u8], Prefixer>> {
+    ) -> ParsideResult<ParserRet<'a, Prefixer>> {
         match cold_code {
             ColdCode::CtB64 | ColdCode::OpB64 => Ok(nomify!(Self::prefixer_from_qb64b)),
             ColdCode::CtOpB2 => Ok(nomify!(Self::prefixer_from_qb2)),
@@ -107,7 +109,7 @@ impl Parsers {
 
     pub(crate) fn seqner_parser<'a>(
         cold_code: &ColdCode,
-    ) -> ParsideResult<fn(&'a [u8]) -> nom::IResult<&'a [u8], Seqner>> {
+    ) -> ParsideResult<ParserRet<'a, Seqner>> {
         match cold_code {
             ColdCode::CtB64 | ColdCode::OpB64 => Ok(nomify!(Self::seqner_from_qb64b)),
             ColdCode::CtOpB2 => Ok(nomify!(Self::seqner_from_qb2)),
@@ -125,7 +127,7 @@ impl Parsers {
 
     pub(crate) fn dater_parser<'a>(
         cold_code: &ColdCode,
-    ) -> ParsideResult<fn(&'a [u8]) -> nom::IResult<&'a [u8], Dater>> {
+    ) -> ParsideResult<ParserRet<'a, Dater>> {
         match cold_code {
             ColdCode::CtB64 | ColdCode::OpB64 => Ok(nomify!(Self::dater_from_qb64b)),
             ColdCode::CtOpB2 => Ok(nomify!(Self::dater_from_qb2)),
@@ -143,7 +145,7 @@ impl Parsers {
 
     pub(crate) fn saider_parser<'a>(
         cold_code: &ColdCode,
-    ) -> ParsideResult<fn(&'a [u8]) -> nom::IResult<&'a [u8], Saider>> {
+    ) -> ParsideResult<ParserRet<'a, Saider>> {
         match cold_code {
             ColdCode::CtB64 | ColdCode::OpB64 => Ok(nomify!(Self::saider_from_qb64b)),
             ColdCode::CtOpB2 => Ok(nomify!(Self::saider_from_qb2)),
@@ -161,7 +163,7 @@ impl Parsers {
 
     pub(crate) fn counter_parser<'a>(
         cold_code: &ColdCode,
-    ) -> ParsideResult<fn(&'a [u8]) -> nom::IResult<&'a [u8], Counter>> {
+    ) -> ParsideResult<ParserRet<'a, Counter>> {
         match cold_code {
             ColdCode::CtB64 | ColdCode::OpB64 => Ok(nomify!(Self::counter_from_qb64b)),
             ColdCode::CtOpB2 => Ok(nomify!(Self::counter_from_qb2)),
@@ -183,7 +185,7 @@ impl Parsers {
 
     pub(crate) fn siger_list_parser<'a>(
         cold_code: &ColdCode,
-    ) -> ParsideResult<fn(&'a [u8]) -> nom::IResult<&'a [u8], Vec<Siger>>> {
+    ) -> ParsideResult<ParserRet<'a, Vec<Siger>>> {
         match cold_code {
             ColdCode::CtB64 | ColdCode::OpB64 => Ok(nomify!(Self::siger_list_from_qb64b)),
             ColdCode::CtOpB2 => Ok(nomify!(Self::siger_list_from_q2)),
@@ -192,14 +194,14 @@ impl Parsers {
     }
 
     fn siger_list_from_qb64b<'a>(bytes: &'a [u8]) -> ParsideResult<(&'a [u8], Vec<Siger>)> {
-        let (rest, counter) = Self::counter_from_qb64b(&bytes)?;
+        let (rest, counter) = Self::counter_from_qb64b(bytes)?;
         let (rest, values) =
             count(nomify!(Parsers::siger_from_qb64b), counter.count() as usize)(rest)?;
         Ok((rest, values))
     }
 
     fn siger_list_from_q2<'a>(bytes: &'a [u8]) -> ParsideResult<(&'a [u8], Vec<Siger>)> {
-        let (rest, counter) = Parsers::counter_from_qb2(&bytes)?;
+        let (rest, counter) = Parsers::counter_from_qb2(bytes)?;
         let (rest, values) =
             count(nomify!(Parsers::siger_from_qb2), counter.count() as usize)(rest)?;
         Ok((rest, values))

@@ -23,9 +23,9 @@ impl Message {
                 CesrGroup::from_stream_bytes(bytes)
                     .map(|(rest, value)| (rest, Message::Group { value }))
             }
-            ColdCode::JSON => CustomPayload::from_json_stream(bytes)
+            ColdCode::Json => CustomPayload::from_json_stream(bytes)
                 .map(|(rest, value)| (rest, Message::Custom { value })),
-            ColdCode::CBOR => CustomPayload::from_cbor_stream(bytes)
+            ColdCode::Cbor => CustomPayload::from_cbor_stream(bytes)
                 .map(|(rest, value)| (rest, Message::Custom { value })),
             ColdCode::MGPK1 | ColdCode::MGPK2 => CustomPayload::from_mgpk_stream(bytes)
                 .map(|(rest, value)| (rest, Message::Custom { value })),
@@ -42,7 +42,7 @@ impl Message {
         }
     }
 
-    pub fn typed_payload<'de, D: DeserializeOwned>(&self) -> ParsideResult<D> {
+    pub fn typed_payload<D: DeserializeOwned>(&self) -> ParsideResult<D> {
         match self {
             Message::Group { .. } => Err(ParsideError::NotExist),
             Message::Custom { value } => value.to_typed_message::<D>(),

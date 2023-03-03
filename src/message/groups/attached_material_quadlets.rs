@@ -30,7 +30,7 @@ impl AttachedMaterialQuadlets {
         _cold_code: &ColdCode,
     ) -> ParsideResult<(&'a [u8], AttachedMaterialQuadlets)> {
         let (rest, body) = many0(nomify!(CesrGroup::from_stream_bytes))(bytes)?;
-        return Ok((rest, AttachedMaterialQuadlets { value: body }));
+        Ok((rest, AttachedMaterialQuadlets { value: body }))
     }
 }
 

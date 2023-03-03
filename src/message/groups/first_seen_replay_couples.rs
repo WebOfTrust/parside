@@ -39,7 +39,7 @@ impl FirstSeenReplayCouples {
             .map(|(firner, dater)| FirstSeenReplayCouple { firner, dater })
             .collect();
 
-        return Ok((rest, FirstSeenReplayCouples { value: body }));
+        Ok((rest, FirstSeenReplayCouples { value: body }))
     }
 }
 

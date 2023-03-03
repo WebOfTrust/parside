@@ -32,7 +32,7 @@ impl WitnessIdxSigs {
         let (rest, body) =
             count(Parsers::siger_parser(cold_code)?, counter.count() as usize)(bytes)?;
         let body = body.into_iter().map(|siger| WitnessIdxSig { siger }).collect();
-        return Ok((rest, WitnessIdxSigs { value: body }));
+        Ok((rest, WitnessIdxSigs { value: body }))
     }
 }
 

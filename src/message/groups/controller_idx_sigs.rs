@@ -32,7 +32,7 @@ impl ControllerIdxSigs {
         let (rest, body) =
             count(Parsers::siger_parser(cold_code)?, counter.count() as usize)(bytes)?;
         let body = body.into_iter().map(|siger| ControllerIdxSig { siger }).collect();
-        return Ok((rest, ControllerIdxSigs { value: body }));
+        Ok((rest, ControllerIdxSigs { value: body }))
     }
 }
 

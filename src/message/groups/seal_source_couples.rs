@@ -37,7 +37,7 @@ impl SealSourceCouples {
         let body =
             body.into_iter().map(|(seqner, saider)| SealSourceCouple { seqner, saider }).collect();
 
-        return Ok((rest, SealSourceCouples { value: body }));
+        Ok((rest, SealSourceCouples { value: body }))
     }
 }
 

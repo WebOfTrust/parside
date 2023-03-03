@@ -10,7 +10,7 @@ pub struct MessageList {
 impl MessageList {
     pub fn from_stream_bytes<'a>(bytes: &'a [u8]) -> ParsideResult<(&'a [u8], MessageList)> {
         let (rest, messages) = many0(nomify!(Message::from_stream_bytes))(bytes)?;
-        return Ok((rest, MessageList { messages }));
+        Ok((rest, MessageList { messages }))
     }
 }
 

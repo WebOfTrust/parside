@@ -49,7 +49,7 @@ impl TransReceiptQuadruples {
             })
             .collect();
 
-        return Ok((rest, TransReceiptQuadruples { value: body }));
+        Ok((rest, TransReceiptQuadruples { value: body }))
     }
 }
 

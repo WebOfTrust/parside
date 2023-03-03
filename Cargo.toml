@@ -9,11 +9,11 @@ license = "Apache-2.0"
 
 [dependencies]
 cesride = { git = "https://github.com/DSRCorporation/cesride.git", branch = "changes-for-parside" }
-nom = "5"
-num-derive = "0.3.3"
-num-traits = "0.2"
-rmp-serde = "0.15"
-serde = { version = "1.0", features = ["derive"] }
-serde_json = { version = "1.0", features = ["preserve_order"] }
-serde_cbor = "0.11.1"
-thiserror = "1.0"
+nom = "~5"
+num-derive = "~0.3"
+num-traits = "~0.2"
+rmp-serde = "~1"
+serde = { version = "~1", features = ["derive"] }
+serde_json = { version = "~1", features = ["preserve_order"] }
+serde_cbor = "~0.11"
+thiserror = "~1"

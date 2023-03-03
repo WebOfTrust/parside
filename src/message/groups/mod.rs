@@ -138,7 +138,7 @@ pub mod tests {
                 assert_eq!(MatterCodex::Salt_128.to_string(), group.value[0].seqner.code());
                 assert_eq!(MatterCodex::Blake3_256.to_string(), group.value[0].saider.code());
             }
-            _ => assert!(false, "Unexpected case"),
+            _ => panic!("Unexpected case"),
         }
     }
 
@@ -153,7 +153,7 @@ pub mod tests {
                 assert_eq!(1, group.value.len());
                 assert_eq!(MatterCodex::Ed25519_Seed.to_string(), group.value[0].siger.code());
             }
-            _ => assert!(false, "Unexpected case"),
+            _ => panic!("Unexpected case"),
         }
     }
 
@@ -168,7 +168,7 @@ pub mod tests {
                 assert_eq!(1, group.value.len());
                 assert_eq!(MatterCodex::Ed25519_Sig.to_string(), group.value[0].cigar.code());
             }
-            _ => assert!(false, "Unexpected case"),
+            _ => panic!("Unexpected case"),
         }
     }
 
@@ -190,7 +190,7 @@ pub mod tests {
                 assert_eq!(1, group.value.len());
                 assert_eq!(MatterCodex::Blake3_256.to_string(), group.value[0].prefixer.code());
             }
-            _ => assert!(false, "Unexpected case"),
+            _ => panic!("Unexpected case"),
         }
     }
 }
