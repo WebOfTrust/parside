@@ -48,6 +48,10 @@ pub enum CesrGroup {
 
 impl CesrGroup {
     pub fn from_stream_bytes(bytes: &[u8]) -> ParsideResult<(&[u8], CesrGroup)> {
+        if bytes.is_empty() {
+            return Err(ParsideError::EmptyBytesStream);
+        }
+
         let cold_code = ColdCode::try_from(bytes[0])?;
         let (rest, counter) = Parsers::counter_parser(&cold_code)?(bytes)?;
         let code = counter.code();
