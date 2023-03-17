@@ -28,8 +28,8 @@ impl<E> From<nom::Err<E>> for ParsideError {
     }
 }
 
-impl From<Box<dyn std::error::Error>> for ParsideError {
-    fn from(err: Box<dyn std::error::Error>) -> ParsideError {
+impl From<anyhow::Error> for ParsideError {
+    fn from(err: anyhow::Error) -> ParsideError {
         ParsideError::Common(err.to_string())
     }
 }
