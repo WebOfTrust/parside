@@ -65,23 +65,36 @@ impl TransLastIdxSigGroup {
 
 impl GroupItem for TransLastIdxSigGroup {
     fn qb64(&self) -> ParsideResult<String> {
-        let mut out = String::new();
-        out.push_str(&self.prefixer.qb64()?);
-        out.push_str(&self.isigers.qb64()?);
+        let mut out = "\0".repeat(self.full_size()? as usize);
+        let mut offset = 0;
+        let mut len = self.prefixer.full_size()? as usize;
+        unsafe { out[offset..len].as_bytes_mut() }
+            .copy_from_slice(self.prefixer.qb64()?.as_bytes());
+        offset += len;
+        len = self.isigers.full_size()? as usize;
+        unsafe { out[offset..len].as_bytes_mut() }.copy_from_slice(self.isigers.qb64()?.as_bytes());
         Ok(out)
     }
 
     fn qb64b(&self) -> ParsideResult<Vec<u8>> {
-        let mut out = Vec::new();
-        out.extend_from_slice(&self.prefixer.qb64b()?);
-        out.extend_from_slice(&self.isigers.qb64b()?);
+        let mut out = vec![0u8; self.full_size()? as usize];
+        let mut offset = 0;
+        let mut len = self.prefixer.full_size()? as usize;
+        out[offset..len].copy_from_slice(&self.prefixer.qb64b()?);
+        offset += len;
+        len = self.isigers.full_size()? as usize;
+        out[offset..len].copy_from_slice(&self.isigers.qb64b()?);
         Ok(out)
     }
 
     fn qb2(&self) -> ParsideResult<Vec<u8>> {
-        let mut out = Vec::new();
-        out.extend_from_slice(&self.prefixer.qb2()?);
-        out.extend_from_slice(&self.isigers.qb2()?);
+        let mut out = vec![0u8; self.full_size()? as usize / 4 * 3];
+        let mut offset = 0;
+        let mut len = self.prefixer.full_size()? as usize / 4 * 3;
+        out[offset..len].copy_from_slice(&self.prefixer.qb2()?);
+        offset += len;
+        len = self.isigers.full_size()? as usize / 4 * 3;
+        out[offset..len].copy_from_slice(&self.isigers.qb2()?);
         Ok(out)
     }
 
