@@ -40,10 +40,19 @@ pub trait Group<T: GroupItem> {
         }
         Ok(out)
     }
+
+    fn full_size(&self) -> ParsideResult<u32> {
+        let mut size = self.counter()?.full_size()?;
+        for value in self.value().iter() {
+            size += value.full_size()?;
+        }
+        Ok(size)
+    }
 }
 
 pub trait GroupItem {
     fn qb64(&self) -> ParsideResult<String>;
     fn qb64b(&self) -> ParsideResult<Vec<u8>>;
     fn qb2(&self) -> ParsideResult<Vec<u8>>;
+    fn full_size(&self) -> ParsideResult<u32>;
 }

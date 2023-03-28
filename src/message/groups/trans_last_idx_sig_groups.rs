@@ -84,6 +84,11 @@ impl GroupItem for TransLastIdxSigGroup {
         out.extend_from_slice(&self.isigers.qb2()?);
         Ok(out)
     }
+
+    fn full_size(&self) -> ParsideResult<u32> {
+        let size = self.prefixer.full_size()? + self.isigers.full_size()?;
+        Ok(size)
+    }
 }
 
 #[cfg(test)]

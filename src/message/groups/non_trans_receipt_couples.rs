@@ -59,6 +59,11 @@ impl GroupItem for NonTransReceiptCouple {
     fn qb2(&self) -> ParsideResult<Vec<u8>> {
         self.cigar.qb2().map_err(ParsideError::from)
     }
+
+    fn full_size(&self) -> ParsideResult<u32> {
+        let size = self.cigar.full_size()?;
+        Ok(size)
+    }
 }
 
 #[cfg(test)]

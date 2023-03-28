@@ -94,4 +94,12 @@ impl GroupItem for TransReceiptQuadruple {
         out.extend_from_slice(&self.siger.qb2()?);
         Ok(out)
     }
+
+    fn full_size(&self) -> ParsideResult<u32> {
+        let size = self.prefixer.full_size()?
+            + self.seqner.full_size()?
+            + self.saider.full_size()?
+            + self.siger.full_size()?;
+        Ok(size)
+    }
 }

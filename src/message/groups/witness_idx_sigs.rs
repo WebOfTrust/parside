@@ -59,4 +59,9 @@ impl GroupItem for WitnessIdxSig {
     fn qb2(&self) -> ParsideResult<Vec<u8>> {
         self.siger.qb2().map_err(ParsideError::from)
     }
+
+    fn full_size(&self) -> ParsideResult<u32> {
+        let size = self.siger.full_size()?;
+        Ok(size)
+    }
 }

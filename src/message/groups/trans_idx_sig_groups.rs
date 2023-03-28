@@ -89,7 +89,7 @@ impl GroupItem for TransIdxSigGroup {
 
     fn qb64b(&self) -> ParsideResult<Vec<u8>> {
         let mut out = Vec::new();
-        out.extend_from_slice(&self.seqner.qb64b()?);
+        out.extend_from_slice(&self.prefixer.qb64b()?);
         out.extend_from_slice(&self.seqner.qb64b()?);
         out.extend_from_slice(&self.saider.qb64b()?);
         out.extend_from_slice(&self.isigers.qb64b()?);
@@ -98,11 +98,19 @@ impl GroupItem for TransIdxSigGroup {
 
     fn qb2(&self) -> ParsideResult<Vec<u8>> {
         let mut out = Vec::new();
-        out.extend_from_slice(&self.seqner.qb2()?);
+        out.extend_from_slice(&self.prefixer.qb2()?);
         out.extend_from_slice(&self.seqner.qb2()?);
         out.extend_from_slice(&self.saider.qb2()?);
         out.extend_from_slice(&self.isigers.qb2()?);
         Ok(out)
+    }
+
+    fn full_size(&self) -> ParsideResult<u32> {
+        let size = self.prefixer.full_size()?
+            + self.seqner.full_size()?
+            + self.saider.full_size()?
+            + self.isigers.full_size()?;
+        Ok(size)
     }
 }
 

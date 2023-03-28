@@ -85,4 +85,21 @@ impl GroupItem for CesrGroup {
             CesrGroup::PathedMaterialQuadletsVariant { value } => value.qb2(),
         }
     }
+
+    fn full_size(&self) -> ParsideResult<u32> {
+        match self {
+            Self::ControllerIdxSigsVariant { value } => value.full_size(),
+            Self::WitnessIdxSigsVariant { value } => value.full_size(),
+            Self::NonTransReceiptCouplesVariant { value } => value.full_size(),
+            Self::TransReceiptQuadruplesVariant { value } => value.full_size(),
+            Self::TransIdxSigGroupsVariant { value } => value.full_size(),
+            Self::TransLastIdxSigGroupsVariant { value } => value.full_size(),
+            Self::FirstSeenReplayCouplesVariant { value } => value.full_size(),
+            Self::SealSourceCouplesVariant { value } => value.full_size(),
+            Self::AttachedMaterialQuadletsVariant { value } => value.full_size(),
+            Self::SadPathSigGroupVariant { value } => value.full_size(),
+            Self::SadPathSigVariant { value } => value.full_size(),
+            Self::PathedMaterialQuadletsVariant { value } => value.full_size(),
+        }
+    }
 }

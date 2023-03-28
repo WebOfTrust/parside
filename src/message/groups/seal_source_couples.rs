@@ -74,4 +74,9 @@ impl GroupItem for SealSourceCouple {
         out.extend_from_slice(&self.saider.qb2()?);
         Ok(out)
     }
+
+    fn full_size(&self) -> ParsideResult<u32> {
+        let size = self.seqner.full_size()? + self.saider.full_size()?;
+        Ok(size)
+    }
 }

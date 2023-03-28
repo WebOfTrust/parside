@@ -76,4 +76,9 @@ impl GroupItem for FirstSeenReplayCouple {
         out.extend_from_slice(&self.firner.qb2()?);
         Ok(out)
     }
+
+    fn full_size(&self) -> ParsideResult<u32> {
+        let size = self.dater.full_size()? + self.firner.full_size()?;
+        Ok(size)
+    }
 }
