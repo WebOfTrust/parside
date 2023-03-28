@@ -1,32 +1,28 @@
+use crate::error::*;
 use crate::{error::JsResult, message::cold_code::ColdCode};
 use cesride::Counter;
 use cesride_wasm::SigerWrapper;
+use cesride_wasm::Wrap;
 use parside_core::message::{ControllerIdxSig, ControllerIdxSigs, GroupItem};
-use wasm_bindgen::{prelude::wasm_bindgen, JsValue};
-use crate::error::*;
+use wasm_bindgen::prelude::*;
 
 #[wasm_bindgen(js_name = ControllerIdxSigs)]
 pub struct ControllerIdxSigsWrapper(pub(crate) ControllerIdxSigs);
 
 #[wasm_bindgen(js_class = ControllerIdxSigs)]
 impl ControllerIdxSigsWrapper {
-    pub(crate) fn from_stream_bytes<'a>(
-        bytes: &'a [u8],
-        counter: &Counter,
-        cold_code: ColdCode,
-    ) -> Result<(&'a [u8], ControllerIdxSigs)> {
+    #[wasm_bindgen(constructor)]
+    pub fn new(value: &ControllerIdxSigWrapper) -> ControllerIdxSigsWrapper {
+        todo!()
+        // let vec = value.map(|x| x.0);
+        // ControllerIdxSigsWrapper(ControllerIdxSigs::new(value))
     }
 
-    // #[wasm_bindgen(constructor)]
-    // pub fn new(value: &Box<[ControllerIdxSigWrapper]>) -> ControllerIdxSigsWrapper {
-    //     let vec = value.map(|x| x.0);
-    //     ControllerIdxSigsWrapper(ControllerIdxSigs::new(value))
-    // }
-
-    // pub fn value(&self) -> Vec<ControllerIdxSig> {
-    //     let v = self.0.value();
-    //     &v
-    // }
+    pub fn value(&self) -> ControllerIdxSigWrapper {
+        todo!()
+        // let v = self.0.value();
+        // &v
+    }
 }
 
 #[wasm_bindgen(js_name = ControllerIdxSig)]
@@ -37,6 +33,10 @@ impl ControllerIdxSigWrapper {
     #[wasm_bindgen(constructor)]
     pub fn new(siger: SigerWrapper) -> ControllerIdxSigWrapper {
         ControllerIdxSigWrapper(ControllerIdxSig::new((*siger).clone()))
+    }
+
+    pub fn value(&self) -> SigerWrapper {
+        SigerWrapper.wrap(self.0.siger)
     }
 
     pub fn qb64(&self) -> Result<String> {
