@@ -31,8 +31,7 @@ impl ControllerIdxSigsWrapper {
         self.0
             .value
             .iter()
-            .map(|value| ControllerIdxSigWrapper(value.clone()))
-            .map(JsValue::from)
+            .map(|value| JsValue::from(ControllerIdxSigWrapper(value.clone())))
             .collect()
     }
 

@@ -33,8 +33,7 @@ impl PathedMaterialQuadletsWrapper {
         self.0
             .value
             .iter()
-            .map(|value| PathedMaterialQuadletWrapper(value.clone()))
-            .map(JsValue::from)
+            .map(|value| JsValue::from(PathedMaterialQuadletWrapper(value.clone())))
             .collect()
     }
 

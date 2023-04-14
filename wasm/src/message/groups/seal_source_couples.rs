@@ -31,8 +31,7 @@ impl SealSourceCouplesWrapper {
         self.0
             .value
             .iter()
-            .map(|value| SealSourceCoupleWrapper(value.clone()))
-            .map(JsValue::from)
+            .map(|value| JsValue::from(SealSourceCoupleWrapper(value.clone())))
             .collect()
     }
 

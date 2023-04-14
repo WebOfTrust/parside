@@ -33,8 +33,7 @@ impl TransReceiptQuadruplesWrapper {
         self.0
             .value
             .iter()
-            .map(|value| TransReceiptQuadrupleWrapper(value.clone()))
-            .map(JsValue::from)
+            .map(|value| JsValue::from(TransReceiptQuadrupleWrapper(value.clone())))
             .collect()
     }
 

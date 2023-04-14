@@ -1,3 +1,4 @@
+pub mod attached_material_quadlets;
 pub mod controller_idx_sigs;
 pub mod first_seen_replay_couples;
 pub mod non_trans_receipt_couples;
@@ -10,6 +11,7 @@ pub mod trans_last_idx_sig_groups;
 pub mod trans_receipt_quadruples;
 pub mod witness_idx_sigs;
 
+pub use self::attached_material_quadlets::AttachedMaterialQuadletsWrapper;
 pub use self::controller_idx_sigs::{ControllerIdxSigWrapper, ControllerIdxSigsWrapper};
 pub use self::first_seen_replay_couples::{
     FirstSeenReplayCoupleWrapper, FirstSeenReplayCouplesWrapper,

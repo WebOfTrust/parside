@@ -32,8 +32,7 @@ impl WitnessIdxSigsWrapper {
         self.0
             .value
             .iter()
-            .map(|value| WitnessIdxSigWrapper(value.clone()))
-            .map(JsValue::from)
+            .map(|value| JsValue::from(WitnessIdxSigWrapper(value.clone())))
             .collect()
     }
 

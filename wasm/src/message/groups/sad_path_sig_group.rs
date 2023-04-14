@@ -31,8 +31,7 @@ impl SadPathSigGroupsWrapper {
         self.0
             .value
             .iter()
-            .map(|value| SadPathSigGroupWrapper(value.clone()))
-            .map(JsValue::from)
+            .map(|value| JsValue::from(SadPathSigGroupWrapper(value.clone())))
             .collect()
     }
 

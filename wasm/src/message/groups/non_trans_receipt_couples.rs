@@ -33,8 +33,7 @@ impl NonTransReceiptCouplesWrapper {
         self.0
             .value
             .iter()
-            .map(|value| NonTransReceiptCoupleWrapper(value.clone()))
-            .map(JsValue::from)
+            .map(|value| JsValue::from(NonTransReceiptCoupleWrapper(value.clone())))
             .collect()
     }
 

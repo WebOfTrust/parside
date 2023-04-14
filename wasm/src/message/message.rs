@@ -1,11 +1,13 @@
 use crate::error::*;
 use crate::message::groups::{
-    ControllerIdxSigsWrapper, FirstSeenReplayCouplesWrapper, NonTransReceiptCouplesWrapper,
-    PathedMaterialQuadletsWrapper, SadPathSigGroupsWrapper, SadPathSigsWrapper,
-    SealSourceCouplesWrapper, TransIdxSigGroupsWrapper, TransLastIdxSigGroupsWrapper,
-    TransReceiptQuadruplesWrapper, WitnessIdxSigsWrapper,
+    AttachedMaterialQuadletsWrapper, ControllerIdxSigsWrapper, FirstSeenReplayCouplesWrapper,
+    NonTransReceiptCouplesWrapper, PathedMaterialQuadletsWrapper, SadPathSigGroupsWrapper,
+    SadPathSigsWrapper, SealSourceCouplesWrapper, TransIdxSigGroupsWrapper,
+    TransLastIdxSigGroupsWrapper, TransReceiptQuadruplesWrapper, WitnessIdxSigsWrapper,
 };
+use crate::utils::from_jsval;
 use parside_core::{CesrGroup, CustomPayload, Message as ParsideMessage};
+use std::ops::Deref;
 use wasm_bindgen::prelude::*;
 
 #[wasm_bindgen(js_name = MessageParsingResult)]
@@ -64,6 +66,98 @@ pub struct CustomPayloadWrapper(pub(crate) CustomPayload);
 
 #[wasm_bindgen(js_class = CesrGroup)]
 impl CesrGroupWrapper {
+    pub fn new_with_attached_material_quadlets(
+        attached_material_quadlets: AttachedMaterialQuadletsWrapper,
+    ) -> CesrGroupWrapper {
+        CesrGroupWrapper(CesrGroup::AttachedMaterialQuadletsVariant {
+            value: attached_material_quadlets.0,
+        })
+    }
+
+    pub fn new_with_controller_idx_sigs(
+        controller_idx_sigs: ControllerIdxSigsWrapper,
+    ) -> CesrGroupWrapper {
+        CesrGroupWrapper(CesrGroup::ControllerIdxSigsVariant {
+            value: controller_idx_sigs.0,
+        })
+    }
+
+    pub fn new_with_first_seen_replay_couples(
+        first_seen_replay_couples: FirstSeenReplayCouplesWrapper,
+    ) -> CesrGroupWrapper {
+        CesrGroupWrapper(CesrGroup::FirstSeenReplayCouplesVariant {
+            value: first_seen_replay_couples.0,
+        })
+    }
+
+    pub fn new_with_non_trans_receipt_couples(
+        non_trans_receipt_couples: NonTransReceiptCouplesWrapper,
+    ) -> CesrGroupWrapper {
+        CesrGroupWrapper(CesrGroup::NonTransReceiptCouplesVariant {
+            value: non_trans_receipt_couples.0,
+        })
+    }
+
+    pub fn new_with_pathed_material_quadlets(
+        pathed_material_quadlets: PathedMaterialQuadletsWrapper,
+    ) -> CesrGroupWrapper {
+        CesrGroupWrapper(CesrGroup::PathedMaterialQuadletsVariant {
+            value: pathed_material_quadlets.0,
+        })
+    }
+
+    pub fn new_with_sad_path_sig(sad_path_sig: SadPathSigsWrapper) -> CesrGroupWrapper {
+        CesrGroupWrapper(CesrGroup::SadPathSigVariant {
+            value: sad_path_sig.0,
+        })
+    }
+
+    pub fn new_with_sad_path_sig_group(
+        sad_path_sig_group: SadPathSigGroupsWrapper,
+    ) -> CesrGroupWrapper {
+        CesrGroupWrapper(CesrGroup::SadPathSigGroupVariant {
+            value: sad_path_sig_group.0,
+        })
+    }
+
+    pub fn new_with_seal_source_couples(
+        seal_source_couples: SealSourceCouplesWrapper,
+    ) -> CesrGroupWrapper {
+        CesrGroupWrapper(CesrGroup::SealSourceCouplesVariant {
+            value: seal_source_couples.0,
+        })
+    }
+
+    pub fn new_with_trans_idx_sig_groups(
+        trans_idx_sig_groups: TransIdxSigGroupsWrapper,
+    ) -> CesrGroupWrapper {
+        CesrGroupWrapper(CesrGroup::TransIdxSigGroupsVariant {
+            value: trans_idx_sig_groups.0,
+        })
+    }
+
+    pub fn new_with_trans_last_idx_sig_groups(
+        trans_last_idx_sig_groups: TransLastIdxSigGroupsWrapper,
+    ) -> CesrGroupWrapper {
+        CesrGroupWrapper(CesrGroup::TransLastIdxSigGroupsVariant {
+            value: trans_last_idx_sig_groups.0,
+        })
+    }
+
+    pub fn new_with_trans_receipt_quadruples(
+        trans_receipt_quadruples: TransReceiptQuadruplesWrapper,
+    ) -> CesrGroupWrapper {
+        CesrGroupWrapper(CesrGroup::TransReceiptQuadruplesVariant {
+            value: trans_receipt_quadruples.0,
+        })
+    }
+
+    pub fn new_with_witness_idx_sigs(witness_idx_sigs: WitnessIdxSigsWrapper) -> CesrGroupWrapper {
+        CesrGroupWrapper(CesrGroup::WitnessIdxSigsVariant {
+            value: witness_idx_sigs.0,
+        })
+    }
+
     #[wasm_bindgen(js_name = controllerIdxSigs)]
     pub fn controller_idx_sigs(&self) -> Option<ControllerIdxSigsWrapper> {
         match &self.0 {
@@ -170,6 +264,18 @@ impl CesrGroupWrapper {
             }
             _ => None,
         }
+    }
+
+    pub(crate) fn from_jsvalue(value: JsValue) -> Result<CesrGroup> {
+        from_jsval::<CesrGroupWrapper>(value).map(|item| (*item).clone())
+    }
+}
+
+impl Deref for CesrGroupWrapper {
+    type Target = CesrGroup;
+
+    fn deref(&self) -> &Self::Target {
+        &self.0
     }
 }
 

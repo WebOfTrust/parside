@@ -33,8 +33,7 @@ impl FirstSeenReplayCouplesWrapper {
         self.0
             .value
             .iter()
-            .map(|value| FirstSeenReplayCoupleWrapper(value.clone()))
-            .map(JsValue::from)
+            .map(|value| JsValue::from(FirstSeenReplayCoupleWrapper(value.clone())))
             .collect()
     }
 

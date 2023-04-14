@@ -34,8 +34,7 @@ impl TransLastIdxSigGroupsWrapper {
         self.0
             .value
             .iter()
-            .map(|value| TransLastIdxSigGroupWrapper(value.clone()))
-            .map(JsValue::from)
+            .map(|value| JsValue::from(TransLastIdxSigGroupWrapper(value.clone())))
             .collect()
     }
 
