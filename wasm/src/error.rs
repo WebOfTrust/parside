@@ -1,5 +1,5 @@
-use parside_core::error::ParsideResult;
 use js_sys::Error as JsError;
+use parside_core::error::ParsideResult;
 use wasm_bindgen::JsValue;
 
 pub type Result<T> = core::result::Result<T, JsValue>;

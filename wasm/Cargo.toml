@@ -7,10 +7,7 @@ edition = "2021"
 [lib]
 crate-type = ["cdylib", "rlib"]
 
-[features]
-tmp_dev = []
-
-[dev-dependencies.getrandom]
+[dependencies.getrandom]
 version = '0.2'
 features = ['js']
 
@@ -27,7 +24,14 @@ package = "cesride-wasm"
 git = "https://github.com/DSRCorporation/cesride.git"
 branch = "wasm-parside"
 
+[dependencies.wasm-bindgen]
+version = '0.2'
+features = ['serde-serialize']
+
+[dependencies.web-sys]
+version = "0.3"
+features = ["console", ]
+
 [dependencies]
-wasm-bindgen = "0.2.84"
 js-sys = '0.3'
 serde_json = "1.0"

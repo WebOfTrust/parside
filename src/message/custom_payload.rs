@@ -7,7 +7,7 @@ use std::io::Cursor;
 use crate::error::{ParsideError, ParsideResult};
 
 /// Datastructures representing custom payload
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub struct CustomPayload {
     pub value: JsonValue,
 }
