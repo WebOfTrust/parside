@@ -65,6 +65,7 @@ impl SadPathSigGroupWrapper {
         SadPathSigGroupWrapper(SadPathSigGroup::new((*siger).clone()))
     }
 
+    #[wasm_bindgen(getter)]
     pub fn siger(&self) -> SigerWrapper {
         SigerWrapper::wrap(&self.0.siger)
     }

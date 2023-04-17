@@ -1,6 +1,5 @@
 use std::ops::Deref;
 
-use crate::error::JsResult;
 use crate::error::*;
 use crate::utils::from_jsval;
 use cesride_wasm::SigerWrapper;
@@ -66,7 +65,8 @@ impl WitnessIdxSigWrapper {
         WitnessIdxSigWrapper(WitnessIdxSig::new((*siger).clone()))
     }
 
-    pub fn value(&self) -> SigerWrapper {
+    #[wasm_bindgen(getter)]
+    pub fn siger(&self) -> SigerWrapper {
         SigerWrapper::wrap(&self.0.siger)
     }
 

@@ -1,14 +1,19 @@
-# WASM FFI for CESRIDE
+# WASM FFI for Parside
 
-You can build the FFI with
-```
-$ wasm-pack build
-```
+Parser library to handle Composable Event Streaming Representation (CESR)
 
-You can run an PoC test with
+### How to build with wasm-pack build
+Install wasm-pack from https://rustwasm.github.io/wasm-pack/installer/ and then
 
 ```
-$ npm run serve
+wasm-pack build # Will output modules best-suited to be bundled with webpack
+wasm-pack build --target=nodejs # Will output modules that can be directly consumed by NodeJS
+wasm-pack build --target=web # Will output modules that can be directly consumed in browser without bundler usage
 ```
 
-and then visiting http://localhost:8080 in a browser should run the example!
+### Run NodeJS demo
+```
+cd demo/node
+yarn install
+yarn start
+```

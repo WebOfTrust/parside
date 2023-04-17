@@ -65,9 +65,12 @@ impl SealSourceCoupleWrapper {
         SealSourceCoupleWrapper(SealSourceCouple::new((*seqner).clone(), (*saider).clone()))
     }
 
+    #[wasm_bindgen(getter)]
     pub fn seqner(&self) -> SeqnerWrapper {
         SeqnerWrapper::wrap(&self.0.seqner)
     }
+
+    #[wasm_bindgen(getter)]
     pub fn saider(&self) -> SaiderWrapper {
         SaiderWrapper::wrap(&self.0.saider)
     }

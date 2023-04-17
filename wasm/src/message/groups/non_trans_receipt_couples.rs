@@ -67,6 +67,7 @@ impl NonTransReceiptCoupleWrapper {
         NonTransReceiptCoupleWrapper(NonTransReceiptCouple::new((*cigar).clone()))
     }
 
+    #[wasm_bindgen(getter)]
     pub fn cigar(&self) -> CigarWrapper {
         CigarWrapper::wrap(&self.0.cigar)
     }

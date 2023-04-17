@@ -6,8 +6,7 @@ description = "Parser for Composable Event Streaming Representation (CESR)"
 license = "Apache-2.0"
 
 [dependencies]
-cesride = { git = "https://github.com/DSRCorporation/cesride.git", branch = "wasm-parside" }
-cesride = "0.5.0"
+cesride = { git = "https://github.com/DSRCorporation/cesride.git", branch = "fix/wasm-readme" }
 nom = "~7.1"
 num-derive = "~0.3"
 num-traits = "~0.2"

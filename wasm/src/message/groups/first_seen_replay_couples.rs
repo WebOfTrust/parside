@@ -70,10 +70,12 @@ impl FirstSeenReplayCoupleWrapper {
         ))
     }
 
+    #[wasm_bindgen(getter)]
     pub fn firner(&self) -> SeqnerWrapper {
         SeqnerWrapper::wrap(&self.0.firner)
     }
 
+    #[wasm_bindgen(getter)]
     pub fn dater(&self) -> DaterWrapper {
         DaterWrapper::wrap(&self.0.dater)
     }

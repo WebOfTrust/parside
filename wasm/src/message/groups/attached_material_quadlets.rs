@@ -1,6 +1,6 @@
 use crate::error::JsResult;
 use crate::error::*;
-use crate::message::message::CesrGroupWrapper;
+use crate::message::groups::CesrGroupWrapper;
 use js_sys::Array;
 use parside_core::message::{AttachedMaterialQuadlets, CesrGroup};
 use parside_core::Group;

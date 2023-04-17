@@ -76,15 +76,22 @@ impl TransIdxSigGroupWrapper {
         ))
     }
 
+    #[wasm_bindgen(getter)]
     pub fn prefixer(&self) -> PrefixerWrapper {
         PrefixerWrapper::wrap(&self.0.prefixer)
     }
+
+    #[wasm_bindgen(getter)]
     pub fn seqner(&self) -> SeqnerWrapper {
         SeqnerWrapper::wrap(&self.0.seqner)
     }
+
+    #[wasm_bindgen(getter)]
     pub fn saider(&self) -> SaiderWrapper {
         SaiderWrapper::wrap(&self.0.saider)
     }
+
+    #[wasm_bindgen(getter)]
     pub fn isigers(&self) -> ControllerIdxSigsWrapper {
         ControllerIdxSigsWrapper::wrap(&self.0.isigers)
     }

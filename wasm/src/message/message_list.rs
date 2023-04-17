@@ -4,7 +4,7 @@ use js_sys::Array;
 use parside_core::MessageList as ParsideMessageList;
 use wasm_bindgen::prelude::*;
 
-#[wasm_bindgen(js_name = ParserResult)]
+#[wasm_bindgen(js_name = MessageListParsingResult)]
 pub struct MessageListParsingResult {
     pub(crate) rest: Vec<u8>,
     pub(crate) messages: Vec<MessageWrapper>,
@@ -37,6 +37,7 @@ impl MessageListParsingResult {
         self.messages.len()
     }
 
+    #[wasm_bindgen(getter)]
     pub fn messages(&self) -> Array {
         self.messages
             .iter()
@@ -51,6 +52,7 @@ impl MessageListParsingResult {
         }
     }
 
+    #[wasm_bindgen(getter)]
     pub fn rest(&self) -> Vec<u8> {
         self.rest.clone()
     }

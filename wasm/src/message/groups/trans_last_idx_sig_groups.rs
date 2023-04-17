@@ -74,9 +74,12 @@ impl TransLastIdxSigGroupWrapper {
         ))
     }
 
+    #[wasm_bindgen(getter)]
     pub fn prefixer(&self) -> PrefixerWrapper {
         PrefixerWrapper::wrap(&self.0.prefixer)
     }
+
+    #[wasm_bindgen(getter)]
     pub fn isigers(&self) -> ControllerIdxSigsWrapper {
         ControllerIdxSigsWrapper::wrap(&self.0.isigers)
     }
