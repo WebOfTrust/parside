@@ -30,6 +30,7 @@ pub use self::trans_last_idx_sig_groups::{TransLastIdxSigGroup, TransLastIdxSigG
 pub use self::trans_receipt_quadruples::{TransReceiptQuadruple, TransReceiptQuadruples};
 pub use self::witness_idx_sigs::{WitnessIdxSig, WitnessIdxSigs};
 
+/// Datastructures representing known CESR group
 #[derive(Debug, Clone)]
 pub enum CesrGroup {
     ControllerIdxSigsVariant { value: ControllerIdxSigs },
@@ -47,6 +48,7 @@ pub enum CesrGroup {
 }
 
 impl CesrGroup {
+    /// Parse CESR group from bytes
     pub fn from_stream_bytes(bytes: &[u8]) -> ParsideResult<(&[u8], CesrGroup)> {
         if bytes.is_empty() {
             return Err(ParsideError::EmptyBytesStream);
@@ -54,9 +56,7 @@ impl CesrGroup {
 
         let cold_code = ColdCode::try_from(bytes[0])?;
         let (rest, counter) = Parsers::counter_parser(&cold_code)?(bytes)?;
-        let code = counter.code();
-
-        match code.as_str() {
+        match counter.code().as_str() {
             AttachedMaterialQuadlets::CODE => {
                 let (rest, group) =
                     AttachedMaterialQuadlets::from_stream_bytes(rest, &counter, &cold_code)?;

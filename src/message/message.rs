@@ -5,6 +5,7 @@ use crate::message::cold_code::ColdCode;
 use crate::message::custom_payload::CustomPayload;
 use crate::message::groups::CesrGroup;
 
+/// Datastructures representing single parsed message which either custom payload or known CESR group
 #[derive(Debug)]
 pub enum Message {
     Custom { value: CustomPayload },
@@ -12,6 +13,7 @@ pub enum Message {
 }
 
 impl Message {
+    /// Parse single message from provided bytes
     pub fn from_stream_bytes(bytes: &[u8]) -> ParsideResult<(&[u8], Message)> {
         if bytes.is_empty() {
             return Err(ParsideError::EmptyBytesStream);
@@ -35,6 +37,7 @@ impl Message {
         }
     }
 
+    /// Get custom payload from parsed message
     pub fn payload(&self) -> ParsideResult<&CustomPayload> {
         match self {
             Message::Group { .. } => Err(ParsideError::NotExist),
@@ -42,6 +45,7 @@ impl Message {
         }
     }
 
+    /// Get custom payload converted to specific data type from parsed message
     pub fn typed_payload<D: DeserializeOwned>(&self) -> ParsideResult<D> {
         match self {
             Message::Group { .. } => Err(ParsideError::NotExist),
@@ -49,6 +53,7 @@ impl Message {
         }
     }
 
+    /// Get CESR group from parsed message
     pub fn cesr_group(&self) -> ParsideResult<&CesrGroup> {
         match self {
             Message::Group { value } => Ok(value),

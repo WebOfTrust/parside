@@ -1,13 +1,13 @@
 use nom::error::ErrorKind;
 use thiserror::Error;
 
-#[derive(Error, Debug)]
+#[derive(Error, Debug, PartialEq)]
 pub enum ParsideError {
     #[error("Payload deserialize error: {0}")]
     PayloadDeserializeError(String),
 
     #[error("Nom error")]
-    StreamDeserializationError(nom::error::ErrorKind),
+    StreamDeserializationError(ErrorKind),
 
     #[error("Empty bytes stream passed for parsing")]
     EmptyBytesStream,

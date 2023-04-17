@@ -6,12 +6,14 @@ use std::io::Cursor;
 
 use crate::error::{ParsideError, ParsideResult};
 
+/// Datastructures representing custom payload
 #[derive(Debug)]
 pub struct CustomPayload {
     pub value: JsonValue,
 }
 
 impl CustomPayload {
+    /// Convert custom payload to specific type
     pub fn to_typed_message<D>(&self) -> ParsideResult<D>
     where
         D: DeserializeOwned,
@@ -20,6 +22,7 @@ impl CustomPayload {
             .map_err(|err| ParsideError::PayloadDeserializeError(err.to_string()))
     }
 
+    /// Parse custom payload from JSON representation
     pub(crate) fn from_json_stream(s: &[u8]) -> ParsideResult<(&[u8], CustomPayload)> {
         let mut stream = serde_json::Deserializer::from_slice(s).into_iter::<JsonValue>();
         match stream.next() {
@@ -29,6 +32,7 @@ impl CustomPayload {
         }
     }
 
+    /// Parse custom payload from CBOR representation
     pub(crate) fn from_cbor_stream(s: &[u8]) -> ParsideResult<(&[u8], CustomPayload)> {
         let mut stream = serde_cbor::Deserializer::from_slice(s).into_iter::<JsonValue>();
         match stream.next() {
@@ -38,6 +42,7 @@ impl CustomPayload {
         }
     }
 
+    /// Parse custom payload from MessagePack representation
     pub(crate) fn from_mgpk_stream(s: &[u8]) -> ParsideResult<(&[u8], CustomPayload)> {
         let mut deser = serde_mgpk::Deserializer::new(Cursor::new(s));
         match Deserialize::deserialize(&mut deser) {

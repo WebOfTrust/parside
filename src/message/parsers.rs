@@ -6,6 +6,7 @@ use cesride::{
 };
 use nom::multi::count;
 
+/// Parser's of CESR primitives
 pub struct Parsers {}
 
 pub type ParserRet<'a, T> = fn(&'a [u8]) -> nom::IResult<&'a [u8], T>;

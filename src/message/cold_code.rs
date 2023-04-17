@@ -3,6 +3,7 @@ use num_traits::FromPrimitive;
 
 use crate::error::{ParsideError, ParsideResult};
 
+/// Cold code defining the serialization format: https://weboftrust.github.io/ietf-cesr/draft-ssmith-cesr.html#section-3.6
 #[repr(u8)]
 #[derive(FromPrimitive, ToPrimitive, Debug, Clone)]
 pub(crate) enum ColdCode {

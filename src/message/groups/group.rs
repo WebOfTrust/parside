@@ -2,21 +2,27 @@ use crate::error::{ParsideError, ParsideResult};
 use cesride::Counter;
 
 pub trait Group<T: GroupItem> {
+    /// Code associated with the group
     const CODE: &'static str;
 
+    /// Group constructor
     fn new(value: Vec<T>) -> Self;
 
+    /// Get group values
     fn value(&self) -> &Vec<T>;
 
+    /// Get group counter
     fn counter(&self) -> ParsideResult<Counter> {
         Counter::new(Some(self.count()), None, Some(Self::CODE), None, None, None)
             .map_err(ParsideError::from)
     }
 
+    /// Get count of items in the group
     fn count(&self) -> u32 {
         self.value().len() as u32
     }
 
+    /// Get qb64 representation of the group
     fn qb64(&self) -> ParsideResult<String> {
         let mut out = self.counter()?.qb64()?;
         for value in self.value().iter() {
@@ -25,6 +31,7 @@ pub trait Group<T: GroupItem> {
         Ok(out)
     }
 
+    /// Get qb64b representation of the group
     fn qb64b(&self) -> ParsideResult<Vec<u8>> {
         let mut out = self.counter()?.qb64b()?;
         for value in self.value().iter() {
@@ -33,6 +40,7 @@ pub trait Group<T: GroupItem> {
         Ok(out)
     }
 
+    /// Get qb2 representation of the group
     fn qb2(&self) -> ParsideResult<Vec<u8>> {
         let mut out = self.counter()?.qb2()?;
         for value in self.value().iter() {
@@ -41,6 +49,7 @@ pub trait Group<T: GroupItem> {
         Ok(out)
     }
 
+    /// Get total size of the group
     fn full_size(&self) -> ParsideResult<u32> {
         let mut size = self.counter()?.full_size()?;
         for value in self.value().iter() {
@@ -51,8 +60,15 @@ pub trait Group<T: GroupItem> {
 }
 
 pub trait GroupItem {
+    /// Get qb64 representation of the group item
     fn qb64(&self) -> ParsideResult<String>;
+
+    /// Get qb64b representation of the group item
     fn qb64b(&self) -> ParsideResult<Vec<u8>>;
+
+    /// Get qb2 representation of the group item
     fn qb2(&self) -> ParsideResult<Vec<u8>>;
+
+    /// Get total size of the group item
     fn full_size(&self) -> ParsideResult<u32>;
 }
