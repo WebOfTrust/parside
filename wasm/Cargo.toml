@@ -1,0 +1,29 @@
+[package]
+name = "parside-wasm"
+description = "Parser library to handle Composable Event Streaming Representation (CESR)"
+license = "Apache-2.0"
+keywords = ["cesr", "keri", "acdc"]
+version = "0.1.0"
+edition = "2021"
+
+[lib]
+crate-type = ["cdylib"]
+
+[dependencies.parside_core]
+path = '..'
+package = "parside"
+
+[dependencies.cesride_wasm]
+git = "https://github.com/DSRCorporation/cesride.git"
+branch = "fix/wasm-readme"
+package = "cesride-wasm"
+
+[dependencies.cesride]
+git = "https://github.com/DSRCorporation/cesride.git"
+branch = "fix/wasm-readme"
+
+[dependencies]
+js-sys = '0.3'
+serde = { version = "1.0", features = ["derive"] }
+serde-wasm-bindgen = "0.4"
+wasm-bindgen = { version = "0.2" }
