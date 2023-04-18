@@ -17,3 +17,12 @@ cd demo/node
 yarn install
 yarn start
 ```
+
+### Run demo in Browser
+```
+cd demo/web
+yarn install
+yarn serve
+```
+
+and then visit http://localhost:8080 in a browser should run the example!
