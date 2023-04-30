@@ -117,7 +117,7 @@ mod test {
         let message = message_list.messages.first().unwrap();
         let group = message.cesr_group().unwrap();
         match group {
-            CesrGroup::AttachedMaterialQuadletsVariant { value: q } => {
+            CesrGroup::AttachedMaterialQuadletsVariant { value: _ } => {
                 assert_eq!(group.qb64().unwrap(), String::from_utf8(quadlets.to_vec()).unwrap());
             }
             _ => panic!("this shouldn't happen"),
