@@ -11,7 +11,7 @@ This library is **currently under construction**.
 
 Example parsing code (top level ACDC, KEL and TEL parsing):
 
-```
+```rust
     fn verify_acdc(&self, creder: &Creder, quadlets: &AttachedMaterialQuadlets, deep: Option<bool>) -> Result<bool> {
         if creder.status()?.is_none() {
             return err!(Error::Validation);
