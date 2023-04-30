@@ -181,10 +181,18 @@ pub mod tests {
         match message {
             CesrGroup::AttachedMaterialQuadletsVariant { value: group } => {
                 assert_eq!(3, group.value.len());
-                assert!(matches!(group.value.get(0).cloned().unwrap(), CesrGroup::ControllerIdxSigsVariant { .. }));
-                assert!(matches!(group.value.get(1).cloned().unwrap(), CesrGroup::WitnessIdxSigsVariant { .. }));
-                assert!(matches!(group.value.get(2).cloned().unwrap(), CesrGroup::FirstSeenReplayCouplesVariant { .. }));
-
+                assert!(matches!(
+                    group.value.get(0).cloned().unwrap(),
+                    CesrGroup::ControllerIdxSigsVariant { .. }
+                ));
+                assert!(matches!(
+                    group.value.get(1).cloned().unwrap(),
+                    CesrGroup::WitnessIdxSigsVariant { .. }
+                ));
+                assert!(matches!(
+                    group.value.get(2).cloned().unwrap(),
+                    CesrGroup::FirstSeenReplayCouplesVariant { .. }
+                ));
             }
             _ => panic!("Unexpected case"),
         }

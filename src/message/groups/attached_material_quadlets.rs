@@ -106,8 +106,8 @@ impl GroupItem for CesrGroup {
 
 #[cfg(test)]
 mod test {
-    use crate::{MessageList, CesrGroup};
     use crate::message::groups::group::GroupItem;
+    use crate::{CesrGroup, MessageList};
 
     #[test]
     fn sanity() {
@@ -119,8 +119,8 @@ mod test {
         match group {
             CesrGroup::AttachedMaterialQuadletsVariant { value: q } => {
                 assert_eq!(group.qb64().unwrap(), String::from_utf8(quadlets.to_vec()).unwrap());
-            },
-            _ => panic!("this shouldn't happen")
+            }
+            _ => panic!("this shouldn't happen"),
         }
     }
 }

@@ -3,11 +3,11 @@ use crate::message::cold_code::ColdCode;
 use crate::message::parsers::Parsers;
 use crate::message::{Group, GroupItem};
 use cesride::counter::Codex;
-use cesride::{Counter, Matter, Pather, Prefixer, Seqner, Saider};
+use cesride::{Counter, Matter, Pather, Prefixer, Saider, Seqner};
 use nom::multi::count;
 use nom::sequence::tuple;
 
-use super::{ControllerIdxSigs, ControllerIdxSig};
+use super::{ControllerIdxSig, ControllerIdxSigs};
 
 // FIXME: Implement proper definition
 #[derive(Debug, Clone, Default)]
@@ -34,7 +34,14 @@ impl SadPathSigs {
         cold_code: &ColdCode,
     ) -> ParsideResult<(&'a [u8], SadPathSigs)> {
         let (rest, body) = count(
-            tuple((Parsers::pather_parser(cold_code)?, Parsers::counter_parser(cold_code)?, Parsers::prefixer_parser(cold_code)?, Parsers::seqner_parser(cold_code)?, Parsers::saider_parser(cold_code)?, Parsers::siger_list_parser(cold_code)?)),
+            tuple((
+                Parsers::pather_parser(cold_code)?,
+                Parsers::counter_parser(cold_code)?,
+                Parsers::prefixer_parser(cold_code)?,
+                Parsers::seqner_parser(cold_code)?,
+                Parsers::saider_parser(cold_code)?,
+                Parsers::siger_list_parser(cold_code)?,
+            )),
             counter.count() as usize,
         )(bytes)?;
 
@@ -50,7 +57,7 @@ impl SadPathSigs {
                     sigers.into_iter().map(ControllerIdxSig::new).collect(),
                 ),
             })
-        .collect();
+            .collect();
 
         Ok((rest, SadPathSigs { value: body }))
     }

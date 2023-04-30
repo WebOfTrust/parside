@@ -1,5 +1,5 @@
 use crate::error::{ParsideError, ParsideResult};
-use cesride::{Counter, counter::Codex};
+use cesride::{counter::Codex, Counter};
 
 pub trait Group<T: GroupItem> {
     /// Code associated with the group
@@ -13,14 +13,15 @@ pub trait Group<T: GroupItem> {
 
     /// Get group counter
     fn counter(&self) -> ParsideResult<Counter> {
-        Counter::new_with_code_and_count(Self::CODE, self.count()?)
-            .map_err(ParsideError::from)
+        Counter::new_with_code_and_count(Self::CODE, self.count()?).map_err(ParsideError::from)
     }
 
     /// Get count of items in the group
     fn count(&self) -> ParsideResult<u32> {
         match Self::CODE {
-            Codex::AttachedMaterialQuadlets | Codex::BigAttachedMaterialQuadlets => Ok(self.full_size()? as u32 / 4 - 1),
+            Codex::AttachedMaterialQuadlets | Codex::BigAttachedMaterialQuadlets => {
+                Ok(self.full_size()? as u32 / 4 - 1)
+            }
             _ => Ok(self.value().len() as u32),
         }
     }
@@ -55,8 +56,8 @@ pub trait Group<T: GroupItem> {
     /// Get total size of the group
     fn full_size(&self) -> ParsideResult<usize> {
         let mut size = match Self::CODE {
-            Codex::AttachedMaterialQuadlets  | Codex::BigAttachedMaterialQuadlets => 4usize,
-            _ => self.counter()?.full_size()?
+            Codex::AttachedMaterialQuadlets | Codex::BigAttachedMaterialQuadlets => 4usize,
+            _ => self.counter()?.full_size()?,
         };
 
         for value in self.value().iter() {

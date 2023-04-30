@@ -23,11 +23,11 @@ impl MessageList {
 #[cfg(test)]
 pub mod tests {
     use super::*;
-    use crate::CesrGroup;
     use crate::error::ParsideError;
+    use crate::CesrGroup;
 
     const PAYLOAD_1: &'static str = r#"{"v":"1","t":"foo"}"#;
-    const PAYLOAD_2:&'static str = r#"{"v":"2","t":"bla"}"#;
+    const PAYLOAD_2: &'static str = r#"{"v":"2","t":"bla"}"#;
     const NON_TRANS_RECEIPT_COUPLES: &'static str = r#"-CABBD8-gMSJ6K1PQ7_gG5ZJn2NkHQJgdkiNrTBz_FWWS_cC0BDc1i44ZX0jaIHh5oNDx-TITbPnI6VEn2nKlqPwkkTF452X7XxYh80tolDpReYwZpnD8TF4Or2v3CpSCikyt6EG"#;
     const CONTROLLER_IDX_SIGS: &'static str = r#"-AABAABg3q8uNg1A2jhEAdbKGf-QupQhNnmZQx3zIyPLWBe6qqLT5ynytivf9EwJhxyhy87a0x2cezDdil4SsM2xxs0O"#;
     const REST: &'static str = "rest";
@@ -62,19 +62,31 @@ pub mod tests {
         let (rest, message_list) = MessageList::from_stream_bytes(stream.as_bytes()).unwrap();
         assert!(rest.is_empty());
         assert_eq!(1, message_list.messages.len());
-        assert!(matches!(message_list.messages[0], Message::Group { value: CesrGroup::NonTransReceiptCouplesVariant { .. } }));
+        assert!(matches!(
+            message_list.messages[0],
+            Message::Group { value: CesrGroup::NonTransReceiptCouplesVariant { .. } }
+        ));
     }
 
     #[test]
     pub fn test_parse_message_list_containing_multiple_message() {
-        let stream = format!("{}{}{}{}", PAYLOAD_1, NON_TRANS_RECEIPT_COUPLES, PAYLOAD_2, CONTROLLER_IDX_SIGS);
+        let stream = format!(
+            "{}{}{}{}",
+            PAYLOAD_1, NON_TRANS_RECEIPT_COUPLES, PAYLOAD_2, CONTROLLER_IDX_SIGS
+        );
         let (rest, message_list) = MessageList::from_stream_bytes(stream.as_bytes()).unwrap();
         assert!(rest.is_empty());
         assert_eq!(4, message_list.messages.len());
         assert!(matches!(message_list.messages[0], Message::Custom { .. }));
-        assert!(matches!(message_list.messages[1], Message::Group { value: CesrGroup::NonTransReceiptCouplesVariant { .. } }));
+        assert!(matches!(
+            message_list.messages[1],
+            Message::Group { value: CesrGroup::NonTransReceiptCouplesVariant { .. } }
+        ));
         assert!(matches!(message_list.messages[2], Message::Custom { .. }));
-        assert!(matches!(message_list.messages[3], Message::Group { value: CesrGroup::ControllerIdxSigsVariant { .. } }));
+        assert!(matches!(
+            message_list.messages[3],
+            Message::Group { value: CesrGroup::ControllerIdxSigsVariant { .. } }
+        ));
     }
 
     #[test]
@@ -84,6 +96,9 @@ pub mod tests {
         assert!(!rest.is_empty());
         assert_eq!(2, message_list.messages.len());
         assert!(matches!(message_list.messages[0], Message::Custom { .. }));
-        assert!(matches!(message_list.messages[1], Message::Group { value: CesrGroup::NonTransReceiptCouplesVariant { .. } }));
+        assert!(matches!(
+            message_list.messages[1],
+            Message::Group { value: CesrGroup::NonTransReceiptCouplesVariant { .. } }
+        ));
     }
 }

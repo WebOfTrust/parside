@@ -92,8 +92,7 @@ impl GroupItem for TransIdxSigGroup {
         unsafe { out[start..end].as_bytes_mut() }.copy_from_slice(counter.qb64()?.as_bytes());
         start = end;
         end += self.prefixer.full_size()?;
-        unsafe { out[start..end].as_bytes_mut() }
-            .copy_from_slice(self.prefixer.qb64()?.as_bytes());
+        unsafe { out[start..end].as_bytes_mut() }.copy_from_slice(self.prefixer.qb64()?.as_bytes());
         start = end;
         end += self.seqner.full_size()?;
         unsafe { out[start..end].as_bytes_mut() }.copy_from_slice(self.seqner.qb64()?.as_bytes());
@@ -137,7 +136,7 @@ impl GroupItem for TransIdxSigGroup {
         let mut out = vec![0u8; self.full_size()? / 4 * 3];
         let mut start = 0;
         let mut end = counter.full_size()?;
-        
+
         out[start..end].copy_from_slice(&counter.qb2()?);
         start = end;
         end += self.prefixer.full_size()? / 4 * 3;

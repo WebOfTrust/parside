@@ -2,7 +2,7 @@ use crate::error::{ParsideError, ParsideResult};
 use crate::message::cold_code::ColdCode;
 use crate::nomify;
 use cesride::{
-    Cigar, Counter, Dater, Diger, Indexer, Matter, Prefixer, Saider, Seqner, Siger, Verfer, Pather,
+    Cigar, Counter, Dater, Diger, Indexer, Matter, Pather, Prefixer, Saider, Seqner, Siger, Verfer,
 };
 use nom::multi::count;
 
