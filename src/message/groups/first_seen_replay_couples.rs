@@ -57,39 +57,39 @@ impl FirstSeenReplayCouple {
 
 impl GroupItem for FirstSeenReplayCouple {
     fn qb64(&self) -> ParsideResult<String> {
-        let mut out = "\0".repeat(self.full_size()? as usize);
+        let mut out = "\0".repeat(self.full_size()?);
         let mut offset = 0;
-        let mut len = self.dater.full_size()? as usize;
+        let mut len = self.dater.full_size()?;
         unsafe { out[offset..len].as_bytes_mut() }.copy_from_slice(self.dater.qb64()?.as_bytes());
         offset += len;
-        len = self.firner.full_size()? as usize;
+        len = self.firner.full_size()?;
         unsafe { out[offset..len].as_bytes_mut() }.copy_from_slice(self.firner.qb64()?.as_bytes());
         Ok(out)
     }
 
     fn qb64b(&self) -> ParsideResult<Vec<u8>> {
-        let mut out = vec![0u8; self.full_size()? as usize];
+        let mut out = vec![0u8; self.full_size()?];
         let mut offset = 0;
-        let mut len = self.dater.full_size()? as usize;
+        let mut len = self.dater.full_size()?;
         out[offset..len].copy_from_slice(&self.dater.qb64b()?);
         offset += len;
-        len = self.firner.full_size()? as usize;
+        len = self.firner.full_size()?;
         out[offset..len].copy_from_slice(&self.firner.qb64b()?);
         Ok(out)
     }
 
     fn qb2(&self) -> ParsideResult<Vec<u8>> {
-        let mut out = vec![0u8; self.full_size()? as usize / 4 * 3];
+        let mut out = vec![0u8; self.full_size()? / 4 * 3];
         let mut offset = 0;
-        let mut len = self.dater.full_size()? as usize / 4 * 3;
+        let mut len = self.dater.full_size()? / 4 * 3;
         out[offset..len].copy_from_slice(&self.dater.qb2()?);
         offset += len;
-        len = self.firner.full_size()? as usize / 4 * 3;
+        len = self.firner.full_size()? / 4 * 3;
         out[offset..len].copy_from_slice(&self.firner.qb2()?);
         Ok(out)
     }
 
-    fn full_size(&self) -> ParsideResult<u32> {
+    fn full_size(&self) -> ParsideResult<usize> {
         let size = self.dater.full_size()? + self.firner.full_size()?;
         Ok(size)
     }

@@ -2,7 +2,7 @@ use crate::error::{ParsideError, ParsideResult};
 use crate::message::cold_code::ColdCode;
 use crate::nomify;
 use cesride::{
-    Cigar, Counter, Dater, Diger, Indexer, Matter, Prefixer, Saider, Seqner, Siger, Verfer,
+    Cigar, Counter, Dater, Diger, Indexer, Matter, Prefixer, Saider, Seqner, Siger, Verfer, Pather,
 };
 use nom::multi::count;
 
@@ -12,6 +12,26 @@ pub struct Parsers {}
 pub type ParserRet<'a, T> = fn(&'a [u8]) -> nom::IResult<&'a [u8], T>;
 
 impl Parsers {
+    pub(crate) fn pather_parser<'a>(cold_code: &ColdCode) -> ParsideResult<ParserRet<'a, Pather>> {
+        match cold_code {
+            ColdCode::CtB64 | ColdCode::OpB64 => Ok(nomify!(Self::pather_from_qb64b)),
+            ColdCode::CtOpB2 => Ok(nomify!(Self::pather_from_qb2)),
+            _ => Err(ParsideError::Unexpected("Unexpected cold code".to_string())),
+        }
+    }
+
+    fn pather_from_qb64b(bytes: &[u8]) -> ParsideResult<(&[u8], Pather)> {
+        let matter = (Pather::new_with_qb64b)(bytes)?;
+        let size = matter.full_size()?;
+        Ok((&bytes[size..], matter))
+    }
+
+    fn pather_from_qb2(bytes: &[u8]) -> ParsideResult<(&[u8], Pather)> {
+        let matter = (Pather::new_with_qb2)(bytes)?;
+        let size = matter.full_size()? / 4 * 3;
+        Ok((&bytes[size..], matter))
+    }
+
     #[allow(unused)]
     pub(crate) fn diger_parser<'a>(cold_code: &ColdCode) -> ParsideResult<ParserRet<'a, Diger>> {
         match cold_code {
@@ -23,13 +43,13 @@ impl Parsers {
 
     fn diger_from_qb64b(bytes: &[u8]) -> ParsideResult<(&[u8], Diger)> {
         let matter = (Diger::new_with_qb64b)(bytes)?;
-        let size = matter.full_size()? as usize;
+        let size = matter.full_size()?;
         Ok((&bytes[size..], matter))
     }
 
     fn diger_from_qb2(bytes: &[u8]) -> ParsideResult<(&[u8], Diger)> {
         let matter = (Diger::new_with_qb2)(bytes)?;
-        let size = matter.full_size()? as usize / 4 * 3;
+        let size = matter.full_size()? / 4 * 3;
         Ok((&bytes[size..], matter))
     }
 
@@ -43,13 +63,13 @@ impl Parsers {
 
     fn siger_from_qb64b(bytes: &[u8]) -> ParsideResult<(&[u8], Siger)> {
         let matter = Siger::new_with_qb64b(bytes, None)?;
-        let size = matter.full_size()? as usize;
+        let size = matter.full_size()?;
         Ok((&bytes[size..], matter))
     }
 
     fn siger_from_qb2(bytes: &[u8]) -> ParsideResult<(&[u8], Siger)> {
         let matter = Siger::new_with_qb2(bytes, None)?;
-        let size = matter.full_size()? as usize / 4 * 3;
+        let size = matter.full_size()? / 4 * 3;
         Ok((&bytes[size..], matter))
     }
 
@@ -63,19 +83,19 @@ impl Parsers {
 
     fn cigar_from_qb64b(bytes: &[u8]) -> ParsideResult<(&[u8], Cigar)> {
         let verfer = Verfer::new_with_qb64b(bytes)?;
-        let size = verfer.full_size()? as usize;
+        let size = verfer.full_size()?;
         let bytes = &bytes[size..];
         let cigar = Cigar::new_with_qb64b(bytes, Some(&verfer))?;
-        let size = cigar.full_size()? as usize;
+        let size = cigar.full_size()?;
         Ok((&bytes[size..], cigar))
     }
 
     fn cigar_from_qb2(bytes: &[u8]) -> ParsideResult<(&[u8], Cigar)> {
         let verfer = Verfer::new_with_qb2(bytes)?;
-        let size = verfer.full_size()? as usize / 4 * 3;
+        let size = verfer.full_size()? / 4 * 3;
         let bytes = &bytes[size..];
         let cigar = Cigar::new_with_qb2(bytes, Some(&verfer))?;
-        let size = cigar.full_size()? as usize / 4 * 3;
+        let size = cigar.full_size()? / 4 * 3;
         Ok((&bytes[size..], cigar))
     }
 
@@ -91,13 +111,13 @@ impl Parsers {
 
     fn prefixer_from_qb64b(bytes: &[u8]) -> ParsideResult<(&[u8], Prefixer)> {
         let matter = (Prefixer::new_with_qb64b)(bytes)?;
-        let size = matter.full_size()? as usize;
+        let size = matter.full_size()?;
         Ok((&bytes[size..], matter))
     }
 
     fn prefixer_from_qb2(bytes: &[u8]) -> ParsideResult<(&[u8], Prefixer)> {
         let matter = (Prefixer::new_with_qb2)(bytes)?;
-        let size = matter.full_size()? as usize / 4 * 3;
+        let size = matter.full_size()? / 4 * 3;
         Ok((&bytes[size..], matter))
     }
 
@@ -111,13 +131,13 @@ impl Parsers {
 
     fn seqner_from_qb64b(bytes: &[u8]) -> ParsideResult<(&[u8], Seqner)> {
         let matter = (Seqner::new_with_qb64b)(bytes)?;
-        let size = matter.full_size()? as usize;
+        let size = matter.full_size()?;
         Ok((&bytes[size..], matter))
     }
 
     fn seqner_from_qb2(bytes: &[u8]) -> ParsideResult<(&[u8], Seqner)> {
         let matter = (Seqner::new_with_qb2)(bytes)?;
-        let size = matter.full_size()? as usize / 4 * 3;
+        let size = matter.full_size()? / 4 * 3;
         Ok((&bytes[size..], matter))
     }
 
@@ -131,13 +151,13 @@ impl Parsers {
 
     fn dater_from_qb64b(bytes: &[u8]) -> ParsideResult<(&[u8], Dater)> {
         let matter = (Dater::new_with_qb64b)(bytes)?;
-        let size = matter.full_size()? as usize;
+        let size = matter.full_size()?;
         Ok((&bytes[size..], matter))
     }
 
     fn dater_from_qb2(bytes: &[u8]) -> ParsideResult<(&[u8], Dater)> {
         let matter = (Dater::new_with_qb2)(bytes)?;
-        let size = matter.full_size()? as usize / 4 * 3;
+        let size = matter.full_size()? / 4 * 3;
         Ok((&bytes[size..], matter))
     }
 
@@ -151,13 +171,13 @@ impl Parsers {
 
     fn saider_from_qb64b(bytes: &[u8]) -> ParsideResult<(&[u8], Saider)> {
         let matter = (Saider::new_with_qb64b)(bytes)?;
-        let size = matter.full_size()? as usize;
+        let size = matter.full_size()?;
         Ok((&bytes[size..], matter))
     }
 
     fn saider_from_qb2(bytes: &[u8]) -> ParsideResult<(&[u8], Saider)> {
         let matter = (Saider::new_with_qb2)(bytes)?;
-        let size = matter.full_size()? as usize / 4 * 3;
+        let size = matter.full_size()? / 4 * 3;
         Ok((&bytes[size..], matter))
     }
 
@@ -173,13 +193,13 @@ impl Parsers {
 
     fn counter_from_qb64b(bytes: &[u8]) -> ParsideResult<(&[u8], Counter)> {
         let counter = Counter::new(None, None, None, Some(bytes), None, None)?;
-        let size = counter.full_size()? as usize;
+        let size = counter.full_size()?;
         Ok((&bytes[size..], counter))
     }
 
     fn counter_from_qb2(bytes: &[u8]) -> ParsideResult<(&[u8], Counter)> {
         let counter = Counter::new(None, None, None, None, None, Some(bytes))?;
-        let size = counter.full_size()? as usize / 4 * 3;
+        let size = counter.full_size()? / 4 * 3;
         Ok((&bytes[size..], counter))
     }
 

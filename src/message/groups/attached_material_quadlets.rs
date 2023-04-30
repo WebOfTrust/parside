@@ -86,7 +86,7 @@ impl GroupItem for CesrGroup {
         }
     }
 
-    fn full_size(&self) -> ParsideResult<u32> {
+    fn full_size(&self) -> ParsideResult<usize> {
         match self {
             Self::ControllerIdxSigsVariant { value } => value.full_size(),
             Self::WitnessIdxSigsVariant { value } => value.full_size(),
@@ -100,6 +100,27 @@ impl GroupItem for CesrGroup {
             Self::SadPathSigGroupVariant { value } => value.full_size(),
             Self::SadPathSigVariant { value } => value.full_size(),
             Self::PathedMaterialQuadletsVariant { value } => value.full_size(),
+        }
+    }
+}
+
+#[cfg(test)]
+mod test {
+    use crate::{MessageList, CesrGroup};
+    use crate::message::groups::group::GroupItem;
+
+    #[test]
+    fn sanity() {
+        let quadlets = b"-VBj-JAB6AABAAA--FABEA_1ZGv4tEhJW2AYH0wLh2lLlllmH3dwpH3RGs2GtgXr0AAAAAAAAAAAAAAAAAAAAAAAEA_1ZGv4tEhJW2AYH0wLh2lLlllmH3dwpH3RGs2GtgXr-AADAABTqch8XeSwyCKFLV1I2OZLLXCCRvjdqiFkTmacYgc1ZgFoAXrUf5ME9IXjA9msTuswpbiKUW64_gW9C8gZCu8JABDRYWR7nw_MEnGE4FN0xmUL-5pVDRkPJGFMK9kcs3XLvQA5KNoMt1kREz4IsPVBgE4ltE44F-6oQ6TYtaoSwb4OACDsl4VeiqrIk9EMy6E58dNao3J2SQJRAmVNgvF7I3t1Uf7ZJ_bOLcouvlcyq46FcpDCL2SmVSuW-ITsbgjz_uwJ";
+        let (_, message_list) = MessageList::from_stream_bytes(quadlets).unwrap();
+
+        let message = message_list.messages.first().unwrap();
+        let group = message.cesr_group().unwrap();
+        match group {
+            CesrGroup::AttachedMaterialQuadletsVariant { value: q } => {
+                assert_eq!(group.qb64().unwrap(), String::from_utf8(quadlets.to_vec()).unwrap());
+            },
+            _ => panic!("this shouldn't happen")
         }
     }
 }

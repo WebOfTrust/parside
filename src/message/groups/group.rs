@@ -1,5 +1,5 @@
 use crate::error::{ParsideError, ParsideResult};
-use cesride::Counter;
+use cesride::{Counter, counter::Codex};
 
 pub trait Group<T: GroupItem> {
     /// Code associated with the group
@@ -13,13 +13,16 @@ pub trait Group<T: GroupItem> {
 
     /// Get group counter
     fn counter(&self) -> ParsideResult<Counter> {
-        Counter::new(Some(self.count()), None, Some(Self::CODE), None, None, None)
+        Counter::new_with_code_and_count(Self::CODE, self.count()?)
             .map_err(ParsideError::from)
     }
 
     /// Get count of items in the group
-    fn count(&self) -> u32 {
-        self.value().len() as u32
+    fn count(&self) -> ParsideResult<u32> {
+        match Self::CODE {
+            Codex::AttachedMaterialQuadlets | Codex::BigAttachedMaterialQuadlets => Ok(self.full_size()? as u32 / 4 - 1),
+            _ => Ok(self.value().len() as u32),
+        }
     }
 
     /// Get qb64 representation of the group
@@ -50,8 +53,12 @@ pub trait Group<T: GroupItem> {
     }
 
     /// Get total size of the group
-    fn full_size(&self) -> ParsideResult<u32> {
-        let mut size = self.counter()?.full_size()?;
+    fn full_size(&self) -> ParsideResult<usize> {
+        let mut size = match Self::CODE {
+            Codex::AttachedMaterialQuadlets  | Codex::BigAttachedMaterialQuadlets => 4usize,
+            _ => self.counter()?.full_size()?
+        };
+
         for value in self.value().iter() {
             size += value.full_size()?;
         }
@@ -70,5 +77,5 @@ pub trait GroupItem {
     fn qb2(&self) -> ParsideResult<Vec<u8>>;
 
     /// Get total size of the group item
-    fn full_size(&self) -> ParsideResult<u32>;
+    fn full_size(&self) -> ParsideResult<usize>;
 }

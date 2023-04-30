@@ -75,63 +75,88 @@ impl TransIdxSigGroup {
     ) -> Self {
         Self { prefixer, seqner, saider, isigers }
     }
+
+    fn counter() -> ParsideResult<Counter> {
+        Ok(Counter::new_with_code_and_count(Codex::TransIdxSigGroups, 1)?)
+    }
 }
 
 impl GroupItem for TransIdxSigGroup {
     fn qb64(&self) -> ParsideResult<String> {
-        let mut out = "\0".repeat(self.full_size()? as usize);
-        let mut offset = 0;
-        let mut len = self.prefixer.full_size()? as usize;
-        unsafe { out[offset..len].as_bytes_mut() }
+        let counter = Self::counter()?;
+
+        let mut out = "\0".repeat(self.full_size()?);
+        let mut start = 0;
+        let mut end = counter.full_size()?;
+
+        unsafe { out[start..end].as_bytes_mut() }.copy_from_slice(counter.qb64()?.as_bytes());
+        start = end;
+        end += self.prefixer.full_size()?;
+        unsafe { out[start..end].as_bytes_mut() }
             .copy_from_slice(self.prefixer.qb64()?.as_bytes());
-        offset += len;
-        len = self.seqner.full_size()? as usize;
-        unsafe { out[offset..len].as_bytes_mut() }.copy_from_slice(self.seqner.qb64()?.as_bytes());
-        offset += len;
-        len = self.saider.full_size()? as usize;
-        unsafe { out[offset..len].as_bytes_mut() }.copy_from_slice(self.saider.qb64()?.as_bytes());
-        offset += len;
-        len = self.isigers.full_size()? as usize;
-        unsafe { out[offset..len].as_bytes_mut() }.copy_from_slice(self.isigers.qb64()?.as_bytes());
+        start = end;
+        end += self.seqner.full_size()?;
+        unsafe { out[start..end].as_bytes_mut() }.copy_from_slice(self.seqner.qb64()?.as_bytes());
+        start = end;
+        end += self.saider.full_size()?;
+        unsafe { out[start..end].as_bytes_mut() }.copy_from_slice(self.saider.qb64()?.as_bytes());
+        start = end;
+        end += self.isigers.full_size()?;
+        unsafe { out[start..end].as_bytes_mut() }.copy_from_slice(self.isigers.qb64()?.as_bytes());
+
         Ok(out)
     }
 
     fn qb64b(&self) -> ParsideResult<Vec<u8>> {
-        let mut out = vec![0u8; self.full_size()? as usize];
-        let mut offset = 0;
-        let mut len = self.prefixer.full_size()? as usize;
-        out[offset..len].copy_from_slice(&self.prefixer.qb64b()?);
-        offset += len;
-        len = self.seqner.full_size()? as usize;
-        out[offset..len].copy_from_slice(&self.seqner.qb64b()?);
-        offset += len;
-        len = self.saider.full_size()? as usize;
-        out[offset..len].copy_from_slice(&self.saider.qb64b()?);
-        offset += len;
-        len = self.isigers.full_size()? as usize;
-        out[offset..len].copy_from_slice(&self.isigers.qb64b()?);
+        let counter = Self::counter()?;
+
+        let mut out = vec![0u8; self.full_size()?];
+        let mut start = 0;
+        let mut end = counter.full_size()?;
+
+        out[start..end].copy_from_slice(&counter.qb64b()?);
+        start = end;
+        end += self.prefixer.full_size()?;
+        out[start..end].copy_from_slice(&self.prefixer.qb64b()?);
+        start = end;
+        end += self.seqner.full_size()?;
+        out[start..end].copy_from_slice(&self.seqner.qb64b()?);
+        start = end;
+        end += self.saider.full_size()?;
+        out[start..end].copy_from_slice(&self.saider.qb64b()?);
+        start = end;
+        end += self.isigers.full_size()?;
+        out[start..end].copy_from_slice(&self.isigers.qb64b()?);
+
         Ok(out)
     }
 
     fn qb2(&self) -> ParsideResult<Vec<u8>> {
-        let mut out = vec![0u8; self.full_size()? as usize / 4 * 3];
-        let mut offset = 0;
-        let mut len = self.prefixer.full_size()? as usize / 4 * 3;
-        out[offset..len].copy_from_slice(&self.prefixer.qb2()?);
-        offset += len;
-        len = self.seqner.full_size()? as usize / 4 * 3;
-        out[offset..len].copy_from_slice(&self.seqner.qb2()?);
-        offset += len;
-        len = self.saider.full_size()? as usize / 4 * 3;
-        out[offset..len].copy_from_slice(&self.saider.qb2()?);
-        offset += len;
-        len = self.isigers.full_size()? as usize / 4 * 3;
-        out[offset..len].copy_from_slice(&self.isigers.qb2()?);
+        let counter = Self::counter()?;
+
+        let mut out = vec![0u8; self.full_size()? / 4 * 3];
+        let mut start = 0;
+        let mut end = counter.full_size()?;
+        
+        out[start..end].copy_from_slice(&counter.qb2()?);
+        start = end;
+        end += self.prefixer.full_size()? / 4 * 3;
+        out[start..end].copy_from_slice(&self.prefixer.qb2()?);
+        start = end;
+        end += self.seqner.full_size()? / 4 * 3;
+        out[start..end].copy_from_slice(&self.seqner.qb2()?);
+        start = end;
+        end += self.saider.full_size()? / 4 * 3;
+        out[start..end].copy_from_slice(&self.saider.qb2()?);
+        start = end;
+        end += self.isigers.full_size()? / 4 * 3;
+        out[start..end].copy_from_slice(&self.isigers.qb2()?);
         Ok(out)
     }
 
-    fn full_size(&self) -> ParsideResult<u32> {
-        let size = self.prefixer.full_size()?
+    fn full_size(&self) -> ParsideResult<usize> {
+        let size = Self::counter()?.full_size()?
+            + self.prefixer.full_size()?
             + self.seqner.full_size()?
             + self.saider.full_size()?
             + self.isigers.full_size()?;

@@ -60,7 +60,7 @@ impl GroupItem for ControllerIdxSig {
         self.siger.qb2().map_err(ParsideError::from)
     }
 
-    fn full_size(&self) -> ParsideResult<u32> {
+    fn full_size(&self) -> ParsideResult<usize> {
         let size = self.siger.full_size()?;
         Ok(size)
     }
